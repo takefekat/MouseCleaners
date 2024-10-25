@@ -18,33 +18,32 @@ def server_process(data_queue):
             try:
                 # キューからデータを取得
                 data = data_queue.get(True)
+                if data == "0":
+                    send_msg = "invalid\0"
                 if data == "1":
-                    send_msg = "1,2,3,4"
-                    print("send root:", send_msg)
-                    clientsocket.send(send_msg.encode("utf-8"))
+                    path_list = [str(i) for i in range(1, 10)] 
+                    send_msg = ",".join(path_list) + "\0"
                 elif data == "2":
-                    send_msg = "1,2,3,4,5,6,7,8,9"
-                    print("send root:", send_msg)
-                    clientsocket.send(send_msg.encode("utf-8"))
+                    path_list = [str(i) for i in range(1, 1024)]
+                    send_msg = ",".join(path_list) + "\0"
                 elif data == "3":
-                    send_msg = "START"
-                    clientsocket.send(send_msg.encode("utf-8"))
-                    print("send: START")
+                    send_msg = "START\0"
                 elif data == "4":
-                    send_msg = "STOP"
-                    clientsocket.send(send_msg.encode("utf-8"))
-                    print("send: STOP")
+                    send_msg = "STOP\0"
                 else:
-                    print('invalid', data)
+                    send_msg = "INVALID\0"
                     pass
-                time.sleep(0.1)
+                clientsocket.send(send_msg.encode("utf-8"))
+                print("send :", send_msg)
+
+                time.sleep(0.5)
 
                 # クライアントからのメッセージを受信
-                msg = clientsocket.recv(1024)
-                print("rcv:", msg.decode("utf-8"))
+                msg = clientsocket.recv(10000)
+                print("rcv:", msg.decode("utf-8", errors="ignore"))
 
                 # クライアントからのメッセージがcloseの場合、通信を終了
-                if msg.decode("utf-8") == "CLOSE":
+                if msg == "CLOSE":
                     break
                    
 
