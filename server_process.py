@@ -64,6 +64,7 @@ def std_input(data_queue):
         print("1,2,3,4: ",end="")
         msg_type = input()
         data_queue.put(msg_type)
+        time.sleep(0.5)
 
 
 
