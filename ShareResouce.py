@@ -8,10 +8,10 @@ class ShareResouce():
     def __init__(self) -> None:
 
         # GUI操作イベント
-        self._path_calc_event = mp.Event()  # 走行経路計算イベント
         self._path_ok_event = mp.Event()    # 走行経路確定イベント
         self._start_event = mp.Event()      # 走行開始イベント
         self._stop_event = mp.Event()       # 走行停止イベント
+        self._gui_update_event = mp.Event() # GUI更新イベント
 
         self._gui_close_event = mp.Event()   # 全プロセス終了イベント(GUI終了イベント)
 

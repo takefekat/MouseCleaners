@@ -56,37 +56,55 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(central_widget)
 
         # ウィジェット
-        map_widget = MapWidget(share_resouce)     # 迷路ウィジェット
-        timer_widget = TimerWidget(share_resouce) # タイマーウィジェット
+        self.map_widget = MapWidget(share_resouce)     # 迷路ウィジェット
+        timer_widget = TimerWidget(share_resouce)
         start_button = QPushButton("Start")
         stop_button = QPushButton("Stop")
+        path_calc_button = QPushButton("Path Calc")
+
+        # ボタンクリック時の処理を設定
+        start_button.clicked.connect(self.start_run)
+        stop_button.clicked.connect(self.stop_run)
+        path_calc_button.clicked.connect(self.path_calc)
 
         # ウィジェットをレイアウトに配置
         layout = QHBoxLayout()
         central_widget.setLayout(layout)
         # 左側にマップウィジェット
-        layout.addWidget(map_widget)      # 左にマップウィジェット
+        layout.addWidget(self.map_widget)      # 左にマップウィジェット
 
         # 右側にタイマーウィジェット、ボタンなどを配置
         layout_right = QVBoxLayout() 
         layout_right.addWidget(timer_widget)  # 右にタイマーラベル
+        layout_right.addWidget(path_calc_button)  # パス計算ボタン
         layout_right.addWidget(start_button)  # スタートボタン
         layout_right.addWidget(stop_button)   # ストップボタン
         layout.addLayout(layout_right)    # レイアウトを追加
 
+    # スタートボタンが押されたときの処理
+    def start_run(self):
+        print("MainWindow.start_run")
+        self.share_resouce._stop_event.clear()
+        self.share_resouce._start_event.set()
 
-    def update_timer(self):
-        print("MainWindow.update_timer")
-        self.time_label.setText(self.make_display_time())
+    # ストップボタンが押されたときの処理
+    def stop_run(self):
+        print("MainWindow.stop_run")
+        self.share_resouce._start_event.clear()
+        self.share_resouce._stop_event.set()
 
-    def start_count_down(self):
-        print("MainWindow.start_count_down")
-        self.share_resouce.count_down_time.value = 5.0
-        self.share_resouce._count_down_exec_event.set()
+    # パス計算ボタンが押されたときの処理
+    def path_calc(self):
+        print("MainWindow.path_calc")
+        self.share_resouce._path1[0] = 1
+        self.share_resouce._path1[1] = 2
+        # 任意の場所を更新
+        for index in range(len(self.map_widget.map_data[0])):
+            self.map_widget.set_map(index, index, 1)  # (3, 5)の座標を1に変更、例えば障害物の位置とか
+        self.map_widget.update_map()
 
     def make_display_time(self):
         print("MainWindow.make_display_time")
-        return f'{self.share_resouce.count_down_time.value:>5.3f}'
 
 
 class MapWidget(QWidget):
@@ -144,7 +162,7 @@ class TimerWidget(QWidget):
 
 
     def update_timer(self):
-        print("TimerWidget.update_timer")
+        #print("TimerWidget.update_timer")
         # 経過時間を計算
         elapsed_time = (datetime.now() - self.start_time).total_seconds()
         # ラベルに経過時間を表示
