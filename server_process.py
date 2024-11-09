@@ -3,10 +3,10 @@ import socket
 from multiprocessing import Process, Event, Queue
 import time
 
-def server_process(data_queue):
+def server_process(data_queue, port):
 
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.bind(('192.168.251.3', 1235))  # IPとポート番号を指定します
+    s.bind(('192.168.251.3', port))  # IPとポート番号を指定します
     s.listen(5)
 
     while True:
@@ -58,12 +58,13 @@ def server_process(data_queue):
         
 
 
-def std_input(data_queue):
+def std_input(data_queue1, data_queue2):
     while True:
         # 標準入力を受け付ける
         print("1,2,3,4: ",end="")
         msg_type = input()
-        data_queue.put(msg_type)
+        data_queue1.put(msg_type)
+        data_queue2.put(msg_type)
         time.sleep(0.5)
 
 
@@ -72,23 +73,27 @@ def std_input(data_queue):
 
 def main():
     # イベントとキューの作成
-    data_queue = Queue()
+    data_queue1 = Queue()
+    data_queue2 = Queue()
 
     # プロセスを作成します
     #user_p = Process(target=std_input, args=(data_queue,))
-    server_p = Process(target=server_process, args=(data_queue,))
+    server_p1 = Process(target=server_process, args=(data_queue1, 1235))
+    server_p2 = Process(target=server_process, args=(data_queue2, 1236))
 
     # プロセスを開始します
-    server_p.start()
+    server_p1.start()
+    server_p2.start()
 
-    std_input(data_queue)
+    std_input(data_queue1, data_queue2)
 
     # 各プロセスの終了を待ちます
     #p1.join()
     #p2.join()
 
     # prは無限ループなので、強制終了
-    server_p.terminate()
+    server_p1.terminate()
+    server_p1.terminate()
 
 if __name__ == '__main__':
     main()
