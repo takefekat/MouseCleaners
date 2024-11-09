@@ -7,7 +7,7 @@ from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtGui import QPainter, QColor, QFont
 from datetime import datetime
 
-from ShareResouce import ShareResouce
+from ShareResouce import ShareResouce, NUM_MOUSE
 
 # メインプロセス
 class ProcessGUI():
@@ -58,14 +58,14 @@ class MainWindow(QMainWindow):
         # ウィジェット
         self.map_widget = MapWidget(share_resouce)     # 迷路ウィジェット
         timer_widget = TimerWidget(share_resouce)
+        path_calc_button = QPushButton("Path Calc")
         start_button = QPushButton("Start")
         stop_button = QPushButton("Stop")
-        path_calc_button = QPushButton("Path Calc")
 
         # ボタンクリック時の処理を設定
+        path_calc_button.clicked.connect(self.path_calc)
         start_button.clicked.connect(self.start_run)
         stop_button.clicked.connect(self.stop_run)
-        path_calc_button.clicked.connect(self.path_calc)
 
         # ウィジェットをレイアウトに配置
         layout = QHBoxLayout()
@@ -81,27 +81,41 @@ class MainWindow(QMainWindow):
         layout_right.addWidget(stop_button)   # ストップボタン
         layout.addLayout(layout_right)    # レイアウトを追加
 
+    # パス計算ボタンが押されたときの処理
+    def path_calc(self):
+        print("MainWindow.path_calc")
+
+        # パス計算
+        for i in range(10):
+            self.share_resouce._path0[2 * i]     = i + 1 # パスのx座標(1-index)
+            self.share_resouce._path0[2 * i + 1] = i + 1 # パスのy座標(1-index)
+        self.share_resouce._path0[20] = 0 # パスの終端を示す
+
+        for i in range(10):
+            self.share_resouce._path1[2 * i]     = 32 - i + 1 # パスのx座標(1-index)
+            self.share_resouce._path1[2 * i + 1] = i + 1      # パスのy座標(1-index)
+        self.share_resouce._path1[20] = 0 # パスの終端を示す
+
+        # マウス送信用パス設定
+        self.share_resouce._send_path_event[0] = 1
+        self.share_resouce._send_path_event[1] = 1
+
+        # GUIマップ更新
+        for index in range(len(self.map_widget.map_data[0])):
+            self.map_widget.set_map(index, index, 1)  # (3, 5)の座標を1に変更、例えば障害物の位置とか
+        self.map_widget.update_map()
+   
     # スタートボタンが押されたときの処理
     def start_run(self):
         print("MainWindow.start_run")
-        self.share_resouce._stop_event.clear()
-        self.share_resouce._start_event.set()
+        for i in range(NUM_MOUSE):
+            self.share_resouce._start_event[i] = 1
 
     # ストップボタンが押されたときの処理
     def stop_run(self):
         print("MainWindow.stop_run")
-        self.share_resouce._start_event.clear()
-        self.share_resouce._stop_event.set()
-
-    # パス計算ボタンが押されたときの処理
-    def path_calc(self):
-        print("MainWindow.path_calc")
-        self.share_resouce._path1[0] = 1
-        self.share_resouce._path1[1] = 2
-        # 任意の場所を更新
-        for index in range(len(self.map_widget.map_data[0])):
-            self.map_widget.set_map(index, index, 1)  # (3, 5)の座標を1に変更、例えば障害物の位置とか
-        self.map_widget.update_map()
+        for i in range(NUM_MOUSE):
+            self.share_resouce._stop_event[i] = 1
 
     def make_display_time(self):
         print("MainWindow.make_display_time")
@@ -132,7 +146,7 @@ class MapWidget(QWidget):
                 painter.drawRect(x * self.cell_size, y * self.cell_size, self.cell_size, self.cell_size)
 
     def set_map(self, x, y, value):
-        print("MapWidget.set_map")
+        #print("MapWidget.set_map")
         self.map_data[y][x] = value  # 任意の座標の値を更新
     
     def update_map(self):
