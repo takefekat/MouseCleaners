@@ -28,8 +28,8 @@ def main():
 
     process_gui._gui_process.terminate()
     process_gui._gui_process.join()
-    process_field._process_field.terminate()
-    process_field._process_field.join()    
+    process_field.process_field.terminate()
+    process_field.process_field.join()    
     for i in range(NUM_MOUSE):
         process_wifi[i].close()
         process_wifi[i]._process_wifi.terminate()

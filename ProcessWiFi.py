@@ -108,7 +108,7 @@ class ProcessWiFi():
                 break
 
             # 経路の終端を示す0があれば終了
-            if index == 0:
+            if index == 255:
                 break
             
             path = path + index.to_bytes(1, "big")

@@ -20,8 +20,12 @@ class ShareResouce():
         # 接続マウス数
         self._connected_mice = mp.Value("i",0)
 
+        # タイマ更新
+        self._field_mode = mp.Value("i",0)
+        self._field_timer_count = mp.Value("i",0)
+
         # 走行経路
-        self._path0 = mp.Array("i",[0]*1024*2)
-        self._path1 = mp.Array("i",[0]*1024*2)
-        self._path2 = mp.Array("i",[0]*1024*2)
-        self._path3 = mp.Array("i",[0]*1024*2)
+        self._path0 = mp.Array("i",[255]*1024*2)
+        self._path1 = mp.Array("i",[255]*1024*2)
+        self._path2 = mp.Array("i",[255]*1024*2)
+        self._path3 = mp.Array("i",[255]*1024*2)
