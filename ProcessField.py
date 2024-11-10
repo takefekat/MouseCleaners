@@ -23,6 +23,7 @@ COLOR_MAX_NUM = 2
 MODE_0 = 0
 MODE_1 = 1
 MODE_2 = 2
+MODE_3 = 3
 
 # ===== 設定変数
 SELECT_FIELD_SIZE = FIELD_SIZE_IS_8X8
@@ -113,6 +114,25 @@ class ProcessField():
                     color += 1
                 else:
                     color = BLUE
+            elif SELECT_MODE == MODE_3:
+                for i in range(len(self.share_resouce._path0) / 2):
+                    x = self.share_resouce._path0[2 * i]
+                    y = self.share_resouce._path0[2 * i + 1]
+                    display_map[x][y] = BLUE
+                
+                for i in range(len(self.share_resouce._path1) / 2):
+                    x = self.share_resouce._path1[2 * i]
+                    y = self.share_resouce._path1[2 * i + 1]
+                    display_map[x][y] = RED
+
+                for i in range(len(self.share_resouce._path2) / 2):
+                    x = self.share_resouce._path2[2 * i]
+                    y = self.share_resouce._path2[2 * i + 1]
+                    display_map[x][y] = GREEN
+
+                ser.write(bytes(list(itertools.chain.from_iterable(display_map))))
+
+                pass
 
             elapsed_time = time.time() - start_time
             sleep_time = interval - elapsed_time
