@@ -49,7 +49,7 @@ sequenceDiagram
     Note over gui: 接続マウス数 描画更新
 ```
 
-#### 経路選択ボタン/経路決定ボタン押下
+#### 経路選択ボタン押下
 目的：
 - ユーザに経路を選択させる（連続して押下した場合は前回値はリセットする）
 
@@ -74,7 +74,6 @@ sequenceDiagram
     Note over field: 各マウスの走行経路を描画
 
     # 走行経路決定
-    user ->>+ gui: 走行経路決定ボタン押下
     gui ->>+ wifi: 各マウスの走行経路
     wifi ->>+ mouse1: マウス1の走行経路
     Note over mouse1: 走行経路記憶
