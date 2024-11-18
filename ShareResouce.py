@@ -25,7 +25,12 @@ class ShareResouce():
         self._field_timer_count = mp.Value("i",0)
 
         # 走行経路
-        self._path0 = mp.Array("i",[255]*1024*2)
-        self._path1 = mp.Array("i",[255]*1024*2)
-        self._path2 = mp.Array("i",[255]*1024*2)
-        self._path3 = mp.Array("i",[255]*1024*2)
+        self._path0 = mp.Array("i",[255]*1024*2) # マウス0の走行経路(x,y)の列
+        self._path1 = mp.Array("i",[255]*1024*2) # マウス1の走行経路(x,y)の列
+        self._path2 = mp.Array("i",[255]*1024*2) # マウス2の走行経路(x,y)の列
+        self._path3 = mp.Array("i",[255]*1024*2) # マウス3の走行経路(x,y)の列
+
+        # GUIマップ
+        self._map_r = mp.Array("i",[0]*32*32)
+        self._map_g = mp.Array("i",[0]*32*32)
+        self._map_b = mp.Array("i",[0]*32*32)

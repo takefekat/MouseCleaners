@@ -9,20 +9,24 @@ from ProcessWiFi import ProcessWiFi
 from ProcessField import ProcessField
 
 def main():
+    # プロセス間共有リソースの生成
     share_resouce = ShareResouce()
-    process_field   = ProcessField(share_resouce=share_resouce)
-    process_gui     = ProcessGUI(share_resouce=share_resouce)
 
-    process_wifi = []
+    # プロセスの生成
+    process_field   = ProcessField(share_resouce=share_resouce) # フィールド描画プロセス
+    process_gui     = ProcessGUI(share_resouce=share_resouce)   # GUIプロセス
+
+    process_wifi = [] # マウスWiFiプロセス
     for i in range(NUM_MOUSE):
         process_wifi.append(ProcessWiFi(share_resouce=share_resouce, mouse_idx=i))
 
+    # プロセスの開始
     process_gui.start()
     process_field.start()
     for i in range(NUM_MOUSE):
         process_wifi[i].start()
     
-
+    # プロセスの終了
     while not share_resouce._gui_close_event.is_set():
         pass
 
