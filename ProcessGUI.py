@@ -40,7 +40,8 @@ class ProcessGUI():
         while True:
             # TimerWidgetからのトリガで一定周期でGUIを更新
             if self.share_resouce._gui_update_event.is_set():
-                self.share_resouce._gui_update_event.clear
+                self.share_resouce._gui_update_event.clear()
+                self.window.update_gui_map()
             self.app.processEvents()
         
     # GUIの開始処理(プロセスの開始)
@@ -72,12 +73,10 @@ class MainWindow(QMainWindow):
         # ウィジェット
         self.map_widget = MapWidget(share_resouce)     # 迷路ウィジェット
         timer_widget = TimerWidget(share_resouce)
-        path_calc_button = QPushButton("Path Calc")
         start_button = QPushButton("Start")
         stop_button = QPushButton("Stop")
 
         # ボタンクリック時の処理を設定
-        path_calc_button.clicked.connect(self.path_calc)
         start_button.clicked.connect(self.start_run)
         stop_button.clicked.connect(self.stop_run)
 
@@ -90,33 +89,9 @@ class MainWindow(QMainWindow):
         # 右側にタイマーウィジェット、ボタンなどを配置
         layout_right = QVBoxLayout() 
         layout_right.addWidget(timer_widget)  # 右にタイマーラベル
-        layout_right.addWidget(path_calc_button)  # パス計算ボタン
         layout_right.addWidget(start_button)  # スタートボタン
         layout_right.addWidget(stop_button)   # ストップボタン
         layout.addLayout(layout_right)    # レイアウトを追加
-
-    # パス計算ボタンが押されたときの処理
-    def path_calc(self):
-        print("MainWindow.path_calc")
-
-        self.path_pattern += 1
-        if self.path_pattern == PATH_PATTERN_MAX:
-            self.path_pattern = PATH_PATTERN1
-        print("path_pattern:", self.path_pattern)
-        
-        # パス計算
-        self.path_calc_pattern()
-
-        # マウス送信用パス設定
-        self.share_resouce._send_path_event[0] = 1
-        self.share_resouce._send_path_event[1] = 1
-        self.share_resouce._send_path_event[2] = 1
-        self.share_resouce._send_path_event[3] = 1
-
-        # GUIマップ更新
-        self.update_gui_map()
-        self.share_resouce._field_mode.value = 3 # 経路を全体表示
-   
     # スタートボタンが押されたときの処理
     def start_run(self):
         print("MainWindow.start_run")
@@ -132,108 +107,6 @@ class MainWindow(QMainWindow):
         print("MainWindow.stop_run")
         for i in range(NUM_MOUSE):
             self.share_resouce._stop_event[i] = 1
-
-    def path_calc_pattern(self):
-        if self.path_pattern == PATH_PATTERN1: # 2台 外周から螺旋で中心へ
-            # マウス1
-            for v_index in range(1024):     # 一番外周は使わない0~29
-                if v_index < 60: # 横
-                    if v_index % 2 == 0:
-                        self.share_resouce._path0[v_index] = (v_index // 2) + 1 # x
-                    else:
-                        self.share_resouce._path0[v_index] = 1           # y
-                elif v_index < 60 + 56: # 縦
-                    if v_index % 2 == 0:
-                        self.share_resouce._path0[v_index] = 30 # x
-                    else:
-                        self.share_resouce._path0[v_index] = ((v_index - 60)// 2) + 1 # y
-                elif v_index < 60 + 56 + 56: # 横
-                    if v_index % 2 == 0:
-                        self.share_resouce._path0[v_index] = 30 - ((v_index - 60 - 56) // 2)
-                    else:
-                        self.share_resouce._path0[v_index] = 29
-                elif v_index < 60 + 56 + 56 + 56: # 縦
-                    if v_index % 2 == 0:
-                        self.share_resouce._path0[v_index] = 2
-                    else:
-                        self.share_resouce._path0[v_index] = 30 - ((v_index - 60 - 56 - 56) // 2)
-                elif v_index < 60 + 56 + 56 + 56 + 54: # 横
-                    if v_index % 2 == 0:
-                        self.share_resouce._path0[v_index] = 1 + ((v_index - 60 - 56 - 56 - 56) // 2)
-                    else:
-                        self.share_resouce._path0[v_index] = 2
-                elif v_index < 60 + 56 + 56 + 56 + 54 + 54: # 縦
-                    if v_index % 2 == 0:
-                        self.share_resouce._path0[v_index] = 30 - 1
-                    else:
-                        self.share_resouce._path0[v_index] = 30 - 1 - ((v_index - 60 - 56 - 56 - 56 - 54) // 2)
-                elif v_index < 60 + 56 + 56 + 56 + 54 + 54 + 52: # 横
-                    if v_index % 2 == 0:
-                        self.share_resouce._path0[v_index] = 30 - 2 - ((v_index - 60 - 56 - 56 - 56 - 54 - 54) // 2)
-                    else:
-                        self.share_resouce._path0[v_index] = 3
-                elif v_index < 60 + 56 + 56 + 56 + 54 + 54 + 52 + 50: # 縦
-                    if v_index % 2 == 0:
-                        self.share_resouce._path0[v_index] = 30 - 2
-                    else:
-                        self.share_resouce._path0[v_index] = 30 - 2 - ((v_index - 60 - 56 - 56 - 56 - 54 - 54 - 52) // 2)
-                else:
-                    self.share_resouce._path0[v_index] = 255
-                    pass
-            # マウス2
-            for v_index in range(1024):
-                if v_index < 60: # 横 ←
-                    if v_index % 2 == 0:
-                        self.share_resouce._path1[v_index] = 30 - (v_index // 2)
-                    else:
-                        self.share_resouce._path1[v_index] = 30
-                elif v_index < 60 + 56: # 縦 ↑
-                    if v_index % 2 == 0:
-                        self.share_resouce._path1[v_index] = 1
-                    else:
-                        self.share_resouce._path1[v_index] = 30 - ((v_index - 60) // 2) - 1
-                elif v_index < 60 + 56 + 56: # 横 →
-                    if v_index % 2 == 0:
-                        self.share_resouce._path1[v_index] = 30 - 30 + ((v_index - 60 - 56) // 2) + 1
-                    else:
-                        self.share_resouce._path1[v_index] = 2
-                elif v_index < 60 + 56 + 56 + 54: # 縦 ↓
-                    if v_index % 2 == 0:
-                        self.share_resouce._path1[v_index] = 29
-                    else:
-                        self.share_resouce._path1[v_index] = 30 - 2 - ((v_index - 60 - 56 - 56) // 2)
-                elif v_index < 60 + 56 + 56 + 54 + 52: # 横 ←
-                    if v_index % 2 == 0:
-                        self.share_resouce._path1[v_index] = 3 + ((v_index - 60 - 56 - 56 - 54) // 2)
-                    else:
-                        self.share_resouce._path1[v_index] = 28
-                elif v_index < 60 + 56 + 56 + 54 + 52 + 48: # 縦　↑
-                    if v_index % 2 == 0:
-                        self.share_resouce._path1[v_index] = 3
-                    else:
-                        self.share_resouce._path1[v_index] = 30 - 3 - ((v_index - 60 - 56 - 56 - 54 - 52) // 2)
-                else:
-                    self.share_resouce._path1[v_index] = 255
-                    pass
-            
-        elif self.path_pattern == PATH_PATTERN2: # 1台 全部塗る
-            for v_index in range(1024):
-                self.share_resouce._path0[v_index] = 255
-                self.share_resouce._path1[v_index] = 255
-                self.share_resouce._path2[v_index] = 255
-                self.share_resouce._path3[v_index] = 255
-
-            v_index = 0
-            for x in range(30):
-                for y in range(30):
-                    if x % 2 == 0:
-                        self.share_resouce._path0[2 * v_index]      = x + 1
-                        self.share_resouce._path0[2 * v_index + 1]  = y + 1
-                    else:
-                        self.share_resouce._path0[2 * v_index]      = x + 1
-                        self.share_resouce._path0[2 * v_index + 1]  = 30 - y
-                    v_index += 1
-
 
     # self.share_resouce._path の内容をマップウィジェットに反映
     def update_gui_map(self):
@@ -312,7 +185,6 @@ class MapWidget(QWidget):
                 painter.drawRect(x * self.cell_size, y * self.cell_size, self.cell_size, self.cell_size)
 
     def set_map(self, x, y, value):
-        #print("MapWidget.set_map")
         self.map_data[y][x] = value  # 任意の座標の値を更新
     
     def update_map(self):

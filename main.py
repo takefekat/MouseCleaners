@@ -7,6 +7,7 @@ from ShareResouce import ShareResouce, NUM_MOUSE
 from ProcessGUI import ProcessGUI
 from ProcessWiFi import ProcessWiFi
 from ProcessField import ProcessField
+from ProcessiPad import ProcessiPad
 
 def main():
     # プロセス間共有リソースの生成
@@ -15,6 +16,7 @@ def main():
     # プロセスの生成
     process_field   = ProcessField(share_resouce=share_resouce) # フィールド描画プロセス
     process_gui     = ProcessGUI(share_resouce=share_resouce)   # GUIプロセス
+    process_ipad    = ProcessiPad(share_resouce=share_resouce)  # iPadプロセス
 
     process_wifi = [] # マウスWiFiプロセス
     for i in range(NUM_MOUSE):
@@ -23,6 +25,7 @@ def main():
     # プロセスの開始
     process_gui.start()
     process_field.start()
+    process_ipad.start()
     for i in range(NUM_MOUSE):
         process_wifi[i].start()
     
@@ -33,7 +36,9 @@ def main():
     process_gui._gui_process.terminate()
     process_gui._gui_process.join()
     process_field.process_field.terminate()
-    process_field.process_field.join()    
+    process_field.process_field.join()   
+    process_ipad._process_ipad.terminate()
+    process_ipad._process_ipad.join() 
     for i in range(NUM_MOUSE):
         process_wifi[i].close()
         process_wifi[i]._process_wifi.terminate()
