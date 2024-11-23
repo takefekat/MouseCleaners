@@ -25,6 +25,7 @@ MODE_1 = 1
 MODE_2 = 2
 MODE_3 = 3
 MODE_4 = 4
+MODE_5 = 5
 
 # ===== 設定変数
 SELECT_FIELD_SIZE = FIELD_SIZE_IS_32X32
@@ -59,7 +60,7 @@ class ProcessField():
         try:
             self.ser = serial.Serial('/dev/tty.usbmodem2101', SELECT_SERIAL_SPEED)  # シリアルポートとボーレートの設定
         except:
-            print("[Warning] Serial port can't open: /dev/cu.usbmodem2101")
+            print("[Warning] Serial port can't open. ls /dev/tty.*")
             pass # シリアルポートが開けない場合は無視(debug用)
 
         led_no=0
@@ -67,6 +68,9 @@ class ProcessField():
         while True:
             start_time = time.time()
 
+            ################################
+            # MODE 0: 
+            ################################
             if self.share_resouce._field_mode.value == MODE_0:
                 for i in range(LED_NUM):
                     for j in range(DATA_LEN):
@@ -90,6 +94,9 @@ class ProcessField():
                 # print(bytes(list(itertools.chain.from_iterable(self.display_map))))
                 # print(len(self.display_map))
                 
+            ################################
+            # MODE 1: 
+            ################################
             elif self.share_resouce._field_mode.value == MODE_1:
                 color = BLUE
 
@@ -104,6 +111,9 @@ class ProcessField():
                 if led_no > LED_NUM-1:
                     led_no = 0
                 
+            ################################
+            # MODE 2: 
+            ################################
             elif self.share_resouce._field_mode.value == MODE_2:
                 if self.display_map[led_no][color] == LED_BRIGHTNESS_MAX:
                     self.display_map[led_no][color] = LED_BRIGHTNESS_MIN
@@ -121,7 +131,9 @@ class ProcessField():
                 else:
                     color = BLUE
             
-            # 経路全体を表示
+            ################################
+            # MODE 3: 経路全体を表示
+            ################################
             elif self.share_resouce._field_mode.value == MODE_3:
                 # 全部白
                 for i in range(LED_NUM):
@@ -131,22 +143,33 @@ class ProcessField():
                     # マウス1: 赤
                     x = self.share_resouce._path0[2 * i]
                     y = self.share_resouce._path0[2 * i + 1]
-                    if x < 32 and y < 32:
-                        self.display_map[x * 32 + y][RED] = LED_BRIGHTNESS_MAX
+                    if x < 16 and y < 16:
+                        self.display_map[(2 * x) * 32 + (2 * y)][RED] = LED_BRIGHTNESS_MAX
+                        self.display_map[(2 * x + 1) * 32 + (2 * y)][RED] = LED_BRIGHTNESS_MAX
+                        self.display_map[(2 * x) * 32 + (2 * y + 1)][RED] = LED_BRIGHTNESS_MAX
+                        self.display_map[(2 * x + 1) * 32 + (2 * y + 1)][RED] = LED_BRIGHTNESS_MAX
                     # マウス2: 青
                     x = self.share_resouce._path1[2 * i]
                     y = self.share_resouce._path1[2 * i + 1]
-                    if x < 32 and y < 32:
-                        self.display_map[x * 32 + y][BLUE] = LED_BRIGHTNESS_MAX
+                    if x < 16 and y < 16:
+                        self.display_map[(2 * x) * 32 + (2 * y)][BLUE] = LED_BRIGHTNESS_MAX
+                        self.display_map[(2 * x + 1) * 32 + (2 * y)][BLUE] = LED_BRIGHTNESS_MAX
+                        self.display_map[(2 * x) * 32 + (2 * y + 1)][BLUE] = LED_BRIGHTNESS_MAX
+                        self.display_map[(2 * x + 1) * 32 + (2 * y + 1)][BLUE] = LED_BRIGHTNESS_MAX
                     # マウス3: 緑
                     x = self.share_resouce._path2[2 * i]
                     y = self.share_resouce._path2[2 * i + 1]
-                    if x < 32 and y < 32:
-                        self.display_map[x * 32 + y][GREEN] = LED_BRIGHTNESS_MAX
+                    if x < 16 and y < 16:
+                        self.display_map[(2 * x) * 32 + (2 * y)][GREEN] = LED_BRIGHTNESS_MAX
+                        self.display_map[(2 * x + 1) * 32 + (2 * y)][GREEN] = LED_BRIGHTNESS_MAX
+                        self.display_map[(2 * x) * 32 + (2 * y + 1)][GREEN] = LED_BRIGHTNESS_MAX
+                        self.display_map[(2 * x + 1) * 32 + (2 * y + 1)][GREEN] = LED_BRIGHTNESS_MAX
 
                 self.serial_send()
 
-            # 経路を時刻に合わせて順に表示
+            #########################################################
+            # MODE 4: 経路を時間にあわせて表示(iPadシミュレーション結果を表示)
+            #########################################################
             elif self.share_resouce._field_mode.value == MODE_4:
                 # 全部白
                 for i in range(LED_NUM):
@@ -181,6 +204,11 @@ class ProcessField():
                         self.display_map[x * 32 + y][GREEN] = LED_BRIGHTNESS_MAX
 
                 self.serial_send()
+            #########################################################
+            # MODE 5: 経路を時間にあわせて表示(マウス自己位置までの経路を表示)
+            #########################################################
+            elif self.share_resouce._field_mode.value == MODE_5:
+                pass
 
                 
             elapsed_time = time.time() - start_time
