@@ -19,6 +19,7 @@ class ProcessWiFiSend():
     def setup(self):
         print(f"[mouce {self.mouse_idx} send]: ProcessWiFiSend.setup", self.port)
         self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.s.bind(('192.168.251.3', self.port))  # IPとポート番号を指定します
         self.s.listen(5)
 
