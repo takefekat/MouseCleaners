@@ -89,9 +89,27 @@ class ProcessWiFiRecv():
             self.clientsocket.close()
             time.sleep(1)
 
+    # マウスからの位置情報を受信したときの処理
+    # 2: x座標
+    # 3: y座標
+    # 4: theta(1byte): 0をX軸として255で360degの角度
+    # 5: velocity(1byte): 車速[m/s]の10倍
+    # 6: state(1byte): 走行中とかの状態
+    # 7: error(1byte): エラーフラグ(正常時はfalse)
     def success_recv(self, msg_buf):
-        
-        pass
+        if self.mouse_idx == 0:
+            self.share_resouce._mouse0_pos[0] = msg_buf[2]
+            self.share_resouce._mouse0_pos[1] = msg_buf[3]
+        elif self.mouse_idx == 1:
+            self.share_resouce._mouse1_pos[0] = msg_buf[2]
+            self.share_resouce._mouse1_pos[1] = msg_buf[3]
+        elif self.mouse_idx == 2:
+            self.share_resouce._mouse2_pos[0] = msg_buf[2]
+            self.share_resouce._mouse2_pos[1] = msg_buf[3]
+        else:
+            print(f"[mouce {self.mouse_idx} recv]: mouse_id error")
+
+        self.share_resouce._mouse_pos_update[self.mouse_idx] = 1
 
     
     def start(self):

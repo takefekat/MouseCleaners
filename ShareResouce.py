@@ -30,6 +30,12 @@ class ShareResouce():
         self._path2 = mp.Array("i",[255]*1024*2) # マウス2の走行経路(x,y)の列
         self._path3 = mp.Array("i",[255]*1024*2) # マウス3の走行経路(x,y)の列
 
+        # マウスの現在位置
+        self._mouse_pos_update = mp.Array("i",[0]*NUM_MOUSE)   # マウス位置更新イベント
+        self._mouse0_pos = mp.Array("i",[0]*2)
+        self._mouse1_pos = mp.Array("i",[0]*2)
+        self._mouse2_pos = mp.Array("i",[0]*2)
+
         # GUIマップ
         self._map_r = mp.Array("i",[0]*32*32)
         self._map_g = mp.Array("i",[0]*32*32)
