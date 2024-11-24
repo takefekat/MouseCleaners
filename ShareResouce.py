@@ -35,6 +35,7 @@ class ShareResouce():
         self._mouse0_pos = mp.Array("i",[0]*2)
         self._mouse1_pos = mp.Array("i",[0]*2)
         self._mouse2_pos = mp.Array("i",[0]*2)
+        self._mouse3_pos = mp.Array("i",[0]*2)
 
         # GUIマップ
         self._map_r = mp.Array("i",[0]*32*32)
