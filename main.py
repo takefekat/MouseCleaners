@@ -20,10 +20,6 @@ def main():
     #process_gui     = ProcessGUI(share_resouce=share_resouce)   # GUIプロセス
     process_ipad    = ProcessiPad(share_resouce=share_resouce)  # iPadプロセス
 
-    #process_wifi = [] # マウスWiFiプロセス
-    #process_wifi.append(ProcessWiFi(share_resouce=share_resouce, mouse_idx=0))
-    #process_wifi.append(ProcessWiFi(share_resouce=share_resouce, mouse_idx=1))
-    #process_wifi.append(ProcessWiFi(share_resouce=share_resouce, mouse_idx=2))
     process_wifi_send = [] # マウスWiFiプロセス
     process_wifi_send.append(ProcessWiFiRecv(share_resouce=share_resouce, mouse_idx=0))
     process_wifi_send.append(ProcessWiFiRecv(share_resouce=share_resouce, mouse_idx=1))
