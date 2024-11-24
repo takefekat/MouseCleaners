@@ -37,15 +37,12 @@ def main():
     #process_gui.start()
     process_field.start()
     process_ipad.start()
-    #process_wifi[0].start()
-    #process_wifi[1].start()
-    #process_wifi[2].start()
-    #process_wifi_send[0].start()
+    process_wifi_send[0].start()
     process_wifi_send[1].start()
-    #process_wifi_send[2].start()
-    #process_wifi_recv[0].start()
+    process_wifi_send[2].start()
+    process_wifi_recv[0].start()
     process_wifi_recv[1].start()
-    #process_wifi_recv[2].start()
+    process_wifi_recv[2].start()
     
     # プロセスの終了
     while not share_resouce._gui_close_event.is_set():
@@ -58,12 +55,9 @@ def main():
     process_ipad._process_ipad.terminate()
     process_ipad._process_ipad.join() 
     for i in range(NUM_MOUSE):
-        #process_wifi[i].close()
-        #process_wifi[i]._process_wifi.terminate()
-        #process_wifi[i]._process_wifi.join()    
         process_wifi_send[i].close()
         process_wifi_send[i]._process_wifi.terminate()
-        process_wifi_send[i]._process_wifi.join()    
+        process_wifi_send[i]._process_wifi.join()
         process_wifi_recv[i].close()
         process_wifi_recv[i]._process_wifi.terminate()
         process_wifi_recv[i]._process_wifi.join()    
