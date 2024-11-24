@@ -20,25 +20,24 @@ def main():
     #process_gui     = ProcessGUI(share_resouce=share_resouce)   # GUIプロセス
     process_ipad    = ProcessiPad(share_resouce=share_resouce)  # iPadプロセス
 
-    process_wifi_send = [] # マウスWiFiプロセス
-    process_wifi_send.append(ProcessWiFiRecv(share_resouce=share_resouce, mouse_idx=0))
-    process_wifi_send.append(ProcessWiFiRecv(share_resouce=share_resouce, mouse_idx=1))
-    process_wifi_send.append(ProcessWiFiRecv(share_resouce=share_resouce, mouse_idx=2))
-    process_wifi_recv = [] # マウスWiFiプロセス
-    process_wifi_recv.append(ProcessWiFiSend(share_resouce=share_resouce, mouse_idx=0))
-    process_wifi_recv.append(ProcessWiFiSend(share_resouce=share_resouce, mouse_idx=1))
-    process_wifi_recv.append(ProcessWiFiSend(share_resouce=share_resouce, mouse_idx=2))
+    process_wifi_send = [] # マウスWiFi送信プロセス
+    process_wifi_recv = [] # マウスWiFi受信プロセス
+    for i in range(NUM_MOUSE):
+        process_wifi_send.append(ProcessWiFiRecv(share_resouce=share_resouce, mouse_idx=i))
+        process_wifi_recv.append(ProcessWiFiSend(share_resouce=share_resouce, mouse_idx=i))
 
     # プロセスの開始
     #process_gui.start()
     process_field.start()
     process_ipad.start()
     process_wifi_send[0].start()
-    process_wifi_send[1].start()
-    process_wifi_send[2].start()
     process_wifi_recv[0].start()
+    process_wifi_send[1].start()
     process_wifi_recv[1].start()
+    process_wifi_send[2].start()
     process_wifi_recv[2].start()
+    process_wifi_send[3].start()
+    process_wifi_recv[3].start()
     
     # プロセスの終了
     while not share_resouce._gui_close_event.is_set():
