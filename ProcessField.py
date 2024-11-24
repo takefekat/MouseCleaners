@@ -209,8 +209,6 @@ class ProcessField():
                 for i in range(1024):
                     y = self.share_resouce._path0[2 * i]
                     x = self.share_resouce._path0[2 * i + 1]
-                    if self.share_resouce._mouse0_pos[0] == x and self.share_resouce._mouse0_pos[1] == y:
-                        break
                     if x < 16 and y < 16:
                         self.display_map[(2 * x) * 32 + (2 * y)][RED] = LED_BRIGHTNESS_MAX
                         self.display_map[(2 * x + 1) * 32 + (2 * y)][RED] = LED_BRIGHTNESS_MAX
@@ -218,12 +216,12 @@ class ProcessField():
                         self.display_map[(2 * x + 1) * 32 + (2 * y + 1)][RED] = LED_BRIGHTNESS_MAX
                     else:
                         break
+                    if self.share_resouce._mouse0_pos[0] == y and self.share_resouce._mouse0_pos[1] == x:
+                        break
                 # マウス2: 青
                 for i in range(1024):
                     y = self.share_resouce._path1[2 * i]
                     x = self.share_resouce._path1[2 * i + 1]
-                    if self.share_resouce._mouse1_pos[0] == x and self.share_resouce._mouse1_pos[1] == y:
-                        break
                     if x < 16 and y < 16:
                         self.display_map[(2 * x) * 32 + (2 * y)][BLUE] = LED_BRIGHTNESS_MAX
                         self.display_map[(2 * x + 1) * 32 + (2 * y)][BLUE] = LED_BRIGHTNESS_MAX
@@ -231,12 +229,12 @@ class ProcessField():
                         self.display_map[(2 * x + 1) * 32 + (2 * y + 1)][BLUE] = LED_BRIGHTNESS_MAX
                     else:  
                         break
+                    if self.share_resouce._mouse1_pos[0] == y and self.share_resouce._mouse1_pos[1] == x:
+                        break
                 # マウス3: 緑
                 for i in range(1024):
                     y = self.share_resouce._path2[2 * i]
                     x = self.share_resouce._path2[2 * i + 1]
-                    if self.share_resouce._mouse2_pos[0] == x and self.share_resouce._mouse2_pos[1] == y:
-                        break
                     if x < 16 and y < 16:
                         self.display_map[(2 * x) * 32 + (2 * y)][GREEN] = LED_BRIGHTNESS_MAX
                         self.display_map[(2 * x + 1) * 32 + (2 * y)][GREEN] = LED_BRIGHTNESS_MAX
@@ -244,12 +242,12 @@ class ProcessField():
                         self.display_map[(2 * x + 1) * 32 + (2 * y + 1)][GREEN] = LED_BRIGHTNESS_MAX
                     else:
                         break
+                    if self.share_resouce._mouse2_pos[0] == y and self.share_resouce._mouse2_pos[1] == x:
+                        break
                 # マウス4: 黄色
                 for i in range(1024):
                     y = self.share_resouce._path3[2 * i]
                     x = self.share_resouce._path3[2 * i + 1]
-                    if self.share_resouce._mouse3_pos[0] == x and self.share_resouce._mouse3_pos[1] == y:
-                        break
                     if x < 16 and y < 16:
                         self.display_map[(2 * x) * 32 + (2 * y)][RED] = LED_BRIGHTNESS_MAX
                         self.display_map[(2 * x + 1) * 32 + (2 * y)][RED] = LED_BRIGHTNESS_MAX
@@ -261,6 +259,8 @@ class ProcessField():
                         self.display_map[(2 * x) * 32 + (2 * y + 1)][GREEN] = LED_BRIGHTNESS_MAX
                         self.display_map[(2 * x + 1) * 32 + (2 * y + 1)][GREEN] = LED_BRIGHTNESS_MAX
                     else:
+                        break
+                    if self.share_resouce._mouse3_pos[0] == y and self.share_resouce._mouse3_pos[1] == x:
                         break
 
                 self.serial_send()
