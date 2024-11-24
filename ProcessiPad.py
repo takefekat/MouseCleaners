@@ -74,10 +74,11 @@ class ProcessiPad():
                                 print("[iPad   ]: start")
                                 # 走行開始イベントをセット
                                 for i in range(NUM_MOUSE):
-                                  self.share_resouce._start_event[i] = 1
+                                    self.share_resouce._start_event[i] = 1          # 走行開始イベントをセット
+                                    self.share_resouce._field_mode5_is_goal[i] = 0  # ゴールフラグをリセット
 
                                 # フィールドモードを経路全体表示に変更
-                                #self.share_resouce._field_mode.value = 5 # 経路を時間にあわせて表示(マウス自己位置までの経路を表示)
+                                self.share_resouce._field_mode.value = 5 # 経路を時間にあわせて表示(マウス自己位置までの経路を表示)
 
                             elif msg_json["signal"] == "stop":           
                                 print("[iPad   ]: stop")

@@ -20,8 +20,9 @@ class ShareResouce():
         # 接続マウス数
         self._connected_mice = mp.Value("i",0)
 
-        # タイマ更新
+        # フィールド更新用
         self._field_mode = mp.Value("i",0)
+        self._field_mode5_is_goal = mp.Array("i",[0]*NUM_MOUSE)
         self._field_timer_count = mp.Value("i",0)
 
         # 走行経路

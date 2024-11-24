@@ -217,7 +217,12 @@ class ProcessField():
                     else:
                         break
                     if self.share_resouce._mouse0_pos[0] == y and self.share_resouce._mouse0_pos[1] == x:
-                        break
+                        next_y = self.share_resouce._path0[2 * (i + 1)]     # 次のマウスのy位置
+                        next_x = self.share_resouce._path0[2 * (i + 1) + 1] # 次のマウスのx位置
+                        if next_x == 255 or next_y == 255:                  # 経路の終端 --> ゴールに到達した
+                            self.share_resouce._field_mode5_is_goal[0] = 1  # ゴール到達フラグを立てる
+                        if self.share_resouce._field_mode5_is_goal[0] == 0: # ゴールに到達していない場合は、マウスの位置までを表示
+                            break
                 # マウス2: 青
                 for i in range(1024):
                     y = self.share_resouce._path1[2 * i]
@@ -230,7 +235,12 @@ class ProcessField():
                     else:  
                         break
                     if self.share_resouce._mouse1_pos[0] == y and self.share_resouce._mouse1_pos[1] == x:
-                        break
+                        next_y = self.share_resouce._path1[2 * (i + 1)]     # 次のマウスのy位置
+                        next_x = self.share_resouce._path1[2 * (i + 1) + 1] # 次のマウスのx位置
+                        if next_x == 255 or next_y == 255:                  # 経路の終端 --> ゴールに到達した
+                            self.share_resouce._field_mode5_is_goal[1] = 1  # ゴール到達フラグを立てる
+                        if self.share_resouce._field_mode5_is_goal[1] == 0: # ゴールに到達していない場合は、マウスの位置までを表示
+                            break
                 # マウス3: 緑
                 for i in range(1024):
                     y = self.share_resouce._path2[2 * i]
@@ -243,7 +253,12 @@ class ProcessField():
                     else:
                         break
                     if self.share_resouce._mouse2_pos[0] == y and self.share_resouce._mouse2_pos[1] == x:
-                        break
+                        next_y = self.share_resouce._path2[2 * (i + 1)]     # 次のマウスのy位置
+                        next_x = self.share_resouce._path2[2 * (i + 1) + 1] # 次のマウスのx位置
+                        if next_x == 255 or next_y == 255:                  # 経路の終端 --> ゴールに到達した
+                            self.share_resouce._field_mode5_is_goal[2] = 1  # ゴール到達フラグを立てる
+                        if self.share_resouce._field_mode5_is_goal[2] == 0: # ゴールに到達していない場合は、マウスの位置までを表示
+                            break
                 # マウス4: 黄色
                 for i in range(1024):
                     y = self.share_resouce._path3[2 * i]
@@ -261,7 +276,12 @@ class ProcessField():
                     else:
                         break
                     if self.share_resouce._mouse3_pos[0] == y and self.share_resouce._mouse3_pos[1] == x:
-                        break
+                        next_y = self.share_resouce._path3[2 * (i + 1)]     # 次のマウスのy位置
+                        next_x = self.share_resouce._path3[2 * (i + 1) + 1] # 次のマウスのx位置
+                        if next_x == 255 or next_y == 255:                  # 経路の終端 --> ゴールに到達した
+                            self.share_resouce._field_mode5_is_goal[3] = 1  # ゴール到達フラグを立てる
+                        if self.share_resouce._field_mode5_is_goal[3] == 0: # ゴールに到達していない場合は、マウスの位置までを表示
+                            break
 
                 self.serial_send()
                 
