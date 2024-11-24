@@ -91,25 +91,39 @@ class ProcessWiFiRecv():
             time.sleep(1)
 
     # マウスからの位置情報を受信したときの処理
-    # 2: x座標
-    # 3: y座標
-    # 4: theta(1byte): 0をX軸として255で360degの角度
-    # 5: velocity(1byte): 車速[m/s]の10倍
-    # 6: state(1byte): 走行中とかの状態
-    # 7: error(1byte): エラーフラグ(正常時はfalse)
+    #  0: heddar <
+    #  1: length
+    #  2: x座標(1byte目)  unit=mm (0-1440mm) の理論値
+    #  3: x座標(2byte目)  unit=mm (0-1440mm) の理論値
+    #  4: y座標(1byte目)  unit=mm (0-1440mm) の理論値
+    #  5: y座標(2byte目)  unit=mm (0-1440mm) の理論値
+    #  6: theta(1byte): 0をX軸として255で360degの角度
+    #  7: velocity(1byte): 車速[m/s]の10倍
+    #  8: battery(1byte): バッテリー電圧[V]の10倍 <-- 11V(110)以下は充電を促す
+    #  9: state(1byte): 走行中とかの状態
+    # 10: error(1byte): エラーフラグ(正常時はfalse)
+    # 11: check_sum
     def success_recv(self, msg_buf):
+        x = ((msg_buf[2] * 256 ) + msg_buf[3]) // 90 # 1440mm -> 16
+        y = ((msg_buf[4] * 256 ) + msg_buf[5]) // 90 # 1440mm -> 16 
         if self.mouse_idx == 0:
-            self.share_resouce._mouse0_pos[0] = msg_buf[2]
-            self.share_resouce._mouse0_pos[1] = msg_buf[3]
+            self.share_resouce._mouse0_pos[0] = x
+            self.share_resouce._mouse0_pos[1] = y
         elif self.mouse_idx == 1:
-            self.share_resouce._mouse1_pos[0] = msg_buf[2]
-            self.share_resouce._mouse1_pos[1] = msg_buf[3]
+            self.share_resouce._mouse1_pos[0] = x
+            self.share_resouce._mouse1_pos[1] = y
         elif self.mouse_idx == 2:
-            self.share_resouce._mouse2_pos[0] = msg_buf[2]
-            self.share_resouce._mouse2_pos[1] = msg_buf[3]
+            self.share_resouce._mouse2_pos[0] = x
+            self.share_resouce._mouse2_pos[1] = y
+        elif self.mouse_idx == 3:
+            self.share_resouce._mouse3_pos[0] = x
+            self.share_resouce._mouse3_pos[1] = y
         else:
-            print(f"[mouce {self.mouse_idx} recv]: mouse_id error")
+            print(f"[mouce {self.mouse_idx}]: mouse_id error")
 
+        print(f"[mouce {self.mouse_idx}]: pos = ({x},{y}), battery = {msg_buf[8]/10}V, state = {msg_buf[9]}, error = {msg_buf[10]}")
+        if msg_buf[8] < 110:
+            print(f"[mouce {self.mouse_idx}]: ##### WARNING ##### Low battery !!") 
         self.share_resouce._mouse_pos_update[self.mouse_idx] = 1
 
     
