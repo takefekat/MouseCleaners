@@ -24,7 +24,7 @@ MODE_0 = 0
 MODE_1 = 1
 MODE_2 = 2
 MODE_3 = 3 # 経路全体を表示
-MODE_4 = 4 # 経路を時間にあわせて表示(iPadシミュレーション結果を表示)
+MODE_4 = 4 # 欠番。経路を時間にあわせて表示(iPadシミュレーション結果を表示)
 MODE_5 = 5 # 経路を時間にあわせて表示(マウス自己位置までの経路を表示)
 
 # ===== 設定変数
@@ -172,44 +172,16 @@ class ProcessField():
                         self.display_map[(2 * x + 1) * 32 + (2 * y + 1)][GREEN] = LED_BRIGHTNESS_MAX
                     else:
                         break
-
-                self.serial_send()
-
-            #########################################################
-            # MODE 4: 経路を時間にあわせて表示(iPadシミュレーション結果を表示)
-            #########################################################
-            elif self.share_resouce._field_mode.value == MODE_4:
-                # 全部白
-                for i in range(LED_NUM):
-                    for j in range(DATA_LEN):
-                        self.display_map[i][j] = LED_BRIGHTNESS_MIN
-                # マウス1: 赤
+                # マウス4: 黄色
                 for i in range(1024):
-                    x = self.share_resouce._path0[2 * i]
-                    y = self.share_resouce._path0[2 * i + 1]
+                    y = self.share_resouce._path3[2 * i]
+                    x = self.share_resouce._path3[2 * i + 1]
                     if x < 16 and y < 16:
                         self.display_map[(2 * x) * 32 + (2 * y)][RED] = LED_BRIGHTNESS_MAX
                         self.display_map[(2 * x + 1) * 32 + (2 * y)][RED] = LED_BRIGHTNESS_MAX
                         self.display_map[(2 * x) * 32 + (2 * y + 1)][RED] = LED_BRIGHTNESS_MAX
                         self.display_map[(2 * x + 1) * 32 + (2 * y + 1)][RED] = LED_BRIGHTNESS_MAX
-                    else:
-                        break
-                # マウス2: 青
-                for i in range(1024):
-                    x = self.share_resouce._path1[2 * i]
-                    y = self.share_resouce._path1[2 * i + 1]
-                    if x < 16 and y < 16:
-                        self.display_map[(2 * x) * 32 + (2 * y)][BLUE] = LED_BRIGHTNESS_MAX
-                        self.display_map[(2 * x + 1) * 32 + (2 * y)][BLUE] = LED_BRIGHTNESS_MAX
-                        self.display_map[(2 * x) * 32 + (2 * y + 1)][BLUE] = LED_BRIGHTNESS_MAX
-                        self.display_map[(2 * x + 1) * 32 + (2 * y + 1)][BLUE] = LED_BRIGHTNESS_MAX
-                    else:  
-                        break
-                # マウス3: 緑
-                for i in range(1024):
-                    x = self.share_resouce._path2[2 * i]
-                    y = self.share_resouce._path2[2 * i + 1]
-                    if x < 16 and y < 16:
+
                         self.display_map[(2 * x) * 32 + (2 * y)][GREEN] = LED_BRIGHTNESS_MAX
                         self.display_map[(2 * x + 1) * 32 + (2 * y)][GREEN] = LED_BRIGHTNESS_MAX
                         self.display_map[(2 * x) * 32 + (2 * y + 1)][GREEN] = LED_BRIGHTNESS_MAX
@@ -218,6 +190,12 @@ class ProcessField():
                         break
 
                 self.serial_send()
+
+            #########################################################
+            # MODE 4: 経路を時間にあわせて表示(iPadシミュレーション結果を表示)
+            #########################################################
+            elif self.share_resouce._field_mode.value == MODE_4:
+                pass # 欠番
 
             #########################################################
             # MODE 5: 経路を時間にあわせて表示(マウス自己位置までの経路を表示)
@@ -229,8 +207,10 @@ class ProcessField():
                         self.display_map[i][j] = LED_BRIGHTNESS_MIN
                 # マウス1: 赤
                 for i in range(1024):
-                    x = self.share_resouce._path0[2 * i]
-                    y = self.share_resouce._path0[2 * i + 1]
+                    y = self.share_resouce._path0[2 * i]
+                    x = self.share_resouce._path0[2 * i + 1]
+                    if self.share_resouce._mouse0_pos[0] == x and self.share_resouce._mouse0_pos[1] == y:
+                        break
                     if x < 16 and y < 16:
                         self.display_map[(2 * x) * 32 + (2 * y)][RED] = LED_BRIGHTNESS_MAX
                         self.display_map[(2 * x + 1) * 32 + (2 * y)][RED] = LED_BRIGHTNESS_MAX
@@ -240,8 +220,10 @@ class ProcessField():
                         break
                 # マウス2: 青
                 for i in range(1024):
-                    x = self.share_resouce._path1[2 * i]
-                    y = self.share_resouce._path1[2 * i + 1]
+                    y = self.share_resouce._path1[2 * i]
+                    x = self.share_resouce._path1[2 * i + 1]
+                    if self.share_resouce._mouse1_pos[0] == x and self.share_resouce._mouse1_pos[1] == y:
+                        break
                     if x < 16 and y < 16:
                         self.display_map[(2 * x) * 32 + (2 * y)][BLUE] = LED_BRIGHTNESS_MAX
                         self.display_map[(2 * x + 1) * 32 + (2 * y)][BLUE] = LED_BRIGHTNESS_MAX
@@ -251,9 +233,29 @@ class ProcessField():
                         break
                 # マウス3: 緑
                 for i in range(1024):
-                    x = self.share_resouce._path2[2 * i]
-                    y = self.share_resouce._path2[2 * i + 1]
+                    y = self.share_resouce._path2[2 * i]
+                    x = self.share_resouce._path2[2 * i + 1]
+                    if self.share_resouce._mouse2_pos[0] == x and self.share_resouce._mouse2_pos[1] == y:
+                        break
                     if x < 16 and y < 16:
+                        self.display_map[(2 * x) * 32 + (2 * y)][GREEN] = LED_BRIGHTNESS_MAX
+                        self.display_map[(2 * x + 1) * 32 + (2 * y)][GREEN] = LED_BRIGHTNESS_MAX
+                        self.display_map[(2 * x) * 32 + (2 * y + 1)][GREEN] = LED_BRIGHTNESS_MAX
+                        self.display_map[(2 * x + 1) * 32 + (2 * y + 1)][GREEN] = LED_BRIGHTNESS_MAX
+                    else:
+                        break
+                # マウス4: 黄色
+                for i in range(1024):
+                    y = self.share_resouce._path3[2 * i]
+                    x = self.share_resouce._path3[2 * i + 1]
+                    if self.share_resouce._mouse3_pos[0] == x and self.share_resouce._mouse3_pos[1] == y:
+                        break
+                    if x < 16 and y < 16:
+                        self.display_map[(2 * x) * 32 + (2 * y)][RED] = LED_BRIGHTNESS_MAX
+                        self.display_map[(2 * x + 1) * 32 + (2 * y)][RED] = LED_BRIGHTNESS_MAX
+                        self.display_map[(2 * x) * 32 + (2 * y + 1)][RED] = LED_BRIGHTNESS_MAX
+                        self.display_map[(2 * x + 1) * 32 + (2 * y + 1)][RED] = LED_BRIGHTNESS_MAX
+                        
                         self.display_map[(2 * x) * 32 + (2 * y)][GREEN] = LED_BRIGHTNESS_MAX
                         self.display_map[(2 * x + 1) * 32 + (2 * y)][GREEN] = LED_BRIGHTNESS_MAX
                         self.display_map[(2 * x) * 32 + (2 * y + 1)][GREEN] = LED_BRIGHTNESS_MAX
