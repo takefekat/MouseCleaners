@@ -37,11 +37,11 @@ class ProcessWiFiRecv():
             check_sum = 0
             # self.clientsocket が有効の場合、以下の処理を実行
             while self.clientsocket:
-                time.sleep(0.1)
+                time.sleep(1/40)
                 try:    
                     # クライアントからのメッセージを受信
                     # プロトコルに従って解釈
-                    msg = self.clientsocket.recv(10000)
+                    msg = self.clientsocket.recv(20)
                     for c in msg:
                         if msg_idx == 0: # header: < が来たら受信開始
                             if c == 60:                        
@@ -63,7 +63,7 @@ class ProcessWiFiRecv():
                             msg_buf[msg_idx] = c
                             msg_idx += 1
                             if check_sum % 256 == c:
-                                print(f"[mouce {self.mouse_idx} recv]: rcv :", msg_buf[:msg_idx])
+                                #print(f"[mouce {self.mouse_idx} recv]: rcv :", msg_buf[:msg_idx])
                                 self.success_recv(msg_buf)
                                 msg_buf = [0] * RECV_BUF_SIZE
                                 msg_idx = 0
@@ -107,24 +107,32 @@ class ProcessWiFiRecv():
         x = ((msg_buf[2] * 256 ) + msg_buf[3]) // 90 # 1440mm -> 16
         y = ((msg_buf[4] * 256 ) + msg_buf[5]) // 90 # 1440mm -> 16 
         if self.mouse_idx == 0:
-            self.share_resouce._mouse0_pos[0] = x
-            self.share_resouce._mouse0_pos[1] = y
+            #if  self.share_resouce._mouse0_pos[0] != x:
+                self.share_resouce._mouse0_pos[0] = x
+            #if  self.share_resouce._mouse0_pos[1] != y:
+                self.share_resouce._mouse0_pos[1] = y
         elif self.mouse_idx == 1:
-            self.share_resouce._mouse1_pos[0] = x
-            self.share_resouce._mouse1_pos[1] = y
+            #if  self.share_resouce._mouse1_pos[0] != x:
+                self.share_resouce._mouse1_pos[0] = x
+            #if  self.share_resouce._mouse1_pos[1] != y:
+                self.share_resouce._mouse1_pos[1] = y
         elif self.mouse_idx == 2:
-            self.share_resouce._mouse2_pos[0] = x
-            self.share_resouce._mouse2_pos[1] = y
+            #if  self.share_resouce._mouse2_pos[0] != x:
+                self.share_resouce._mouse2_pos[0] = x
+            #if  self.share_resouce._mouse2_pos[1] != y:
+                self.share_resouce._mouse2_pos[1] = y
         elif self.mouse_idx == 3:
-            self.share_resouce._mouse3_pos[0] = x
-            self.share_resouce._mouse3_pos[1] = y
+            #if  self.share_resouce._mouse3_pos[0] != x:
+                self.share_resouce._mouse3_pos[0] = x
+            #if  self.share_resouce._mouse3_pos[1] != y:
+                self.share_resouce._mouse3_pos[1] = y
         else:
             print(f"[mouce {self.mouse_idx}]: mouse_id error")
 
-        print(f"[mouce {self.mouse_idx}]: pos = ({x},{y}), battery = {msg_buf[8]/10}V, state = {msg_buf[9]}, error = {msg_buf[10]}")
+        #print('wifi rcv,', x, ',', y)
+        #print(f"[mouce {self.mouse_idx}]: pos = ({x},{y}), battery = {msg_buf[8]/10}V, state = {msg_buf[9]}, error = {msg_buf[10]}")
         if msg_buf[8] < 110:
-            print(f"[mouce {self.mouse_idx}]: ##### WARNING ##### Low battery !!") 
-        self.share_resouce._mouse_pos_update[self.mouse_idx] = 1
+            print(f"[mouce {self.mouse_idx}]: ##### WARNING ##### Low battery !!", msg_buf[8]) 
 
     
     def start(self):

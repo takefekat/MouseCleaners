@@ -33,6 +33,7 @@ class ProcessWiFiSend():
 
             # self.clientsocket が有効の場合、以下の処理を実行
             while self.clientsocket:
+                time.sleep(0.5)
                 try:
                     # mouse_idx の経路が設定されていれば送信
                     if self.share_resouce._send_path_event[self.mouse_idx] == 1:
