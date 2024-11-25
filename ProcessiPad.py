@@ -63,7 +63,7 @@ class ProcessiPad():
                                 self.share_resouce._send_path_event[path['mouse_id']] = 1
 
                                 # フィールドモードを経路全体表示に変更
-                                self.share_resouce._field_mode.value = 3 # 経路全体を表示
+                                self.share_resouce._field_mode.value = 3 # MODE_3 経路全体を表示
 
                             # GUI更新イベントをセット
                             self.share_resouce._gui_update_event.set()
@@ -78,7 +78,7 @@ class ProcessiPad():
                                     self.share_resouce._field_mode5_is_goal[i] = 0  # ゴールフラグをリセット
 
                                 # フィールドモードを経路全体表示に変更
-                                self.share_resouce._field_mode.value = 5 # 経路を時間にあわせて表示(マウス自己位置までの経路を表示)
+                                self.share_resouce._field_mode.value = 4 # MODE_4: 往路 
 
                             elif msg_json["signal"] == "stop":           
                                 print("[iPad   ]: stop")

@@ -39,7 +39,7 @@ class ProcessWiFi():
                         self.share_resouce._send_path_event[self.mouse_idx] = 0
                         send_data = self.send_path()
 
-                    # mouse_idx の走行開始イベントがあれば送信
+                    # mouse_idx の往路走行開始イベントがあれば送信
                     elif self.share_resouce._start_event[self.mouse_idx] == 1:
                         self.share_resouce._start_event[self.mouse_idx] = 0
                         send_data = b'START'
@@ -48,6 +48,11 @@ class ProcessWiFi():
                     elif self.share_resouce._stop_event[self.mouse_idx] == 1:
                         self.share_resouce._stop_event[self.mouse_idx] = 0
                         send_data = b'STOP'
+
+                    # mouse_idx の走行停止イベントがあれば送信
+                    elif self.share_resouce._return_event[self.mouse_idx] == 1:
+                        self.share_resouce._return_event[self.mouse_idx] = 0
+                        send_data = b'RETURN'
 
                     else:
                         continue

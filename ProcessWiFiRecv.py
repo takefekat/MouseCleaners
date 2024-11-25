@@ -31,6 +31,17 @@ class ProcessWiFiRecv():
             self.clientsocket, address = self.s.accept()
             print(f"[mouce {self.mouse_idx} recv]: Connection from {address} has been established.")
 
+            # マウス新規接続時初期化
+            if self.clientsocket:
+                self.share_resouce._send_path_event[self.mouse_idx] = 0
+                self.share_resouce._start_event[self.mouse_idx] = 0
+                self.share_resouce._stop_event[self.mouse_idx] = 0
+                self.share_resouce._return_event[self.mouse_idx] = 0
+                self.share_resouce._field_mode5_is_goal[self.mouse_idx] = 0
+                self.share_resouce._connected_mice[self.mouse_idx] = 1
+                mouce_num = sum(self.share_resouce._connected_mice)
+                print("[mouce {self.mouse_idx} connected. MOUCE_NUM =", mouce_num)
+
             msg_buf = [0] * RECV_BUF_SIZE            
             msg_idx = 0
             check_sum = 0

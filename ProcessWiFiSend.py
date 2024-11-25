@@ -29,6 +29,17 @@ class ProcessWiFiSend():
 
             self.clientsocket, address = self.s.accept()
             print(f"[mouce {self.mouse_idx} send]: Connection from {address} has been established.")
+            
+            # マウス新規接続時初期化: share_resouceの初期化をしたほうがいい。
+            if self.clientsocket:
+                self.share_resouce._send_path_event[self.mouse_idx] = 0
+                self.share_resouce._start_event[self.mouse_idx] = 0
+                self.share_resouce._stop_event[self.mouse_idx] = 0
+                self.share_resouce._return_event[self.mouse_idx] = 0
+                self.share_resouce._field_mode5_is_goal[self.mouse_idx] = 0
+                self.share_resouce._connected_mice[self.mouse_idx] = 1
+                mouce_num = sum(self.share_resouce._connected_mice)
+                print("[mouce {self.mouse_idx} connected. MOUCE_NUM =", mouce_num)
 
             # self.clientsocket が有効の場合、以下の処理を実行
             while self.clientsocket:
@@ -49,6 +60,11 @@ class ProcessWiFiSend():
                     elif self.share_resouce._stop_event[self.mouse_idx] == 1:
                         self.share_resouce._stop_event[self.mouse_idx] = 0
                         send_data = b'STOP'
+
+                    # mouse_idx の走行停止イベントがあれば送信
+                    elif self.share_resouce._return_event[self.mouse_idx] == 1:
+                        self.share_resouce._return_event[self.mouse_idx] = 0
+                        send_data = b'RETURN'
 
                     else:
                         continue
