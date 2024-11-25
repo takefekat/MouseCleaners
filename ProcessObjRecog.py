@@ -26,7 +26,7 @@ class ProcessObjRecog():
 
         # 定常処理
         while True:
-            time.sleep(1)
+            time.sleep(0.1)
 
             self.clientsocket, address = self.s.accept()
             print(f"[obj recog]: Connection from {address} has been established.")
@@ -37,11 +37,11 @@ class ProcessObjRecog():
 
             # self.clientsocket が有効の場合、以下の処理を実行
             while self.clientsocket:
-                time.sleep(1)
+                time.sleep(0.1)
                 try:    
                     # クライアントからのメッセージを受信
-                    msg_json = self.clientsocket.recv(2048)
-                    
+                    msg_json = self.clientsocket.recv(810)
+                    print(len(msg_json))
                     if not msg_json:
                         print("[obj recog] Received empty message, closing connection.")
                         self.clientsocket.close()
@@ -63,11 +63,11 @@ class ProcessObjRecog():
                     self.share_resouce._field_obj[obj_idx] = 255
 
                 except BrokenPipeError: # リモートのクライアントが接続を閉じた後にデータを送信しようとした場合
-                    print(f"[mouce {self.mouse_idx} recv]: Connection closed by client.")
+                    print(f"[obj recog]: Connection closed by client.")
                     self.clientsocket.close()
                     break
                 except ConnectionResetError: # クライアントが切断した場合
-                    print(f"[mouce {self.mouse_idx} recv]: Connection reset by client.")
+                    print(f"[obj recog]: Connection reset by client.")
                     self.clientsocket.close()
                     break
 
@@ -75,7 +75,6 @@ class ProcessObjRecog():
             print(f"[obj recog]: socket closed.")
 
             self.clientsocket.close()
-            time.sleep(1)
 
     def start(self):
         self._process_wifi.start()
