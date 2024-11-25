@@ -4,9 +4,10 @@ import time
 import multiprocessing as mp
 import socket
 
-from ShareResouce import ShareResouce
+from ShareResouce import ShareResouce, NUM_MOUSE
 
 RECV_BUF_SIZE = 20
+MOUCE_NAME = ["赤", "青", "緑", "黄"]
 
 class ProcessWiFiRecv():
     def __init__(self, share_resouce:ShareResouce, mouse_idx:int) -> None:
@@ -140,11 +141,15 @@ class ProcessWiFiRecv():
         else:
             print(f"[mouce {self.mouse_idx}]: mouse_id error")
 
-        #print('wifi rcv,', x, ',', y)
-        #print(f"[mouce {self.mouse_idx}]: pos = ({x},{y}), battery = {msg_buf[8]/10}V, state = {msg_buf[9]}, error = {msg_buf[10]}")
+        # バッテリー電圧が低い場合は警告
         if msg_buf[8] < 110:
-            print(f"[mouce {self.mouse_idx}]: ##### WARNING ##### Low battery !!", msg_buf[8]) 
+            print(f"[mouce {MOUCE_NAME[self.mouse_idx]}]: ##### WARNING ##### Low battery !!", msg_buf[8] / 10, "V") 
 
+        # エラーがある場合は全マウスを停止
+        if msg_buf[10] == 1:
+            print(f"[mouce {MOUCE_NAME[self.mouse_idx]}]: ##### ERROR ##### MOUSE ")
+            for i in range(NUM_MOUSE):
+                self.share_resouce._stop_event[i] = 1
     
     def start(self):
         self._process_wifi.start()
