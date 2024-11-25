@@ -18,7 +18,7 @@ class ShareResouce():
         self._gui_close_event = mp.Event()   # 全プロセス終了イベント(GUI終了イベント)
 
         # 接続マウス数
-        self._connected_mice = mp.Value("i",0)
+        self._connected_mice = mp.Array("i",[0]*NUM_MOUSE)
 
         # フィールド更新用
         self._field_mode = mp.Value("i",0)

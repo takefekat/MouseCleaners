@@ -30,13 +30,13 @@ class ProcessWiFiRecv():
 
             self.clientsocket, address = self.s.accept()
             print(f"[mouce {self.mouse_idx} recv]: Connection from {address} has been established.")
-            self.share_resouce._connected_mice.value += 1
 
             msg_buf = [0] * RECV_BUF_SIZE            
             msg_idx = 0
             check_sum = 0
             # self.clientsocket が有効の場合、以下の処理を実行
             while self.clientsocket:
+                self.share_resouce._connected_mice[self.mouse_idx] = 1  # ソケット接続中 --> マウスあり
                 time.sleep(1/40)
                 try:    
                     # クライアントからのメッセージを受信
@@ -85,7 +85,7 @@ class ProcessWiFiRecv():
                     break
                 
             print(f"[mouce {self.mouse_idx} recv]: Connection closed.")
-            self.share_resouce._connected_mice.value -= 1
+            self.share_resouce._connected_mice[self.mouse_idx] = 0  # マウスなし
 
             self.clientsocket.close()
             time.sleep(1)

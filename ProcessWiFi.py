@@ -28,10 +28,10 @@ class ProcessWiFi():
 
             self.clientsocket, address = self.s.accept()
             print(f"[mouce {self.mouse_idx}]: Connection from {address} has been established.")
-            self.share_resouce._connected_mice.value += 1
 
             # self.clientsocket が有効の場合、以下の処理を実行
             while self.clientsocket:
+                self.share_resouce._connected_mice[self.mouse_idx] = 1  # ソケット接続中 --> マウスあり
                 
                 try:
                     # mouse_idx の経路が設定されていれば送信
@@ -76,9 +76,9 @@ class ProcessWiFi():
                     break
                 
             print(f"[mouce {self.mouse_idx}]: Connection closed.")
-            self.share_resouce._connected_mice.value -= 1
 
             self.clientsocket.close()
+            self.share_resouce._connected_mice[self.mouse_idx] = 0  # マウスなし
             time.sleep(1)
 
     def make_send_msg(self, data:bytes):
