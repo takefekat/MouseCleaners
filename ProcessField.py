@@ -140,6 +140,27 @@ class ProcessField():
                 for i in range(LED_NUM):
                     for j in range(DATA_LEN):
                         self.display_map[i][j] = LED_BRIGHTNESS_MIN
+                
+                # 障害物を表示
+                for i in range(1024):
+                    y = self.share_resouce._field_obj[2 * i]
+                    x = self.share_resouce._field_obj[2 * i + 1]
+                    if x < 16 and y < 16:
+                        self.display_map[(2 * x) * 32 + (2 * y)][RED] = LED_BRIGHTNESS_MAX
+                        self.display_map[(2 * x + 1) * 32 + (2 * y)][RED] = LED_BRIGHTNESS_MAX
+                        self.display_map[(2 * x) * 32 + (2 * y + 1)][RED] = LED_BRIGHTNESS_MAX
+                        self.display_map[(2 * x + 1) * 32 + (2 * y + 1)][RED] = LED_BRIGHTNESS_MAX
+                        self.display_map[(2 * x) * 32 + (2 * y)][GREEN] = LED_BRIGHTNESS_MAX
+                        self.display_map[(2 * x + 1) * 32 + (2 * y)][GREEN] = LED_BRIGHTNESS_MAX
+                        self.display_map[(2 * x) * 32 + (2 * y + 1)][GREEN] = LED_BRIGHTNESS_MAX
+                        self.display_map[(2 * x + 1) * 32 + (2 * y + 1)][GREEN] = LED_BRIGHTNESS_MAX
+                        self.display_map[(2 * x) * 32 + (2 * y)][BLUE] = LED_BRIGHTNESS_MAX
+                        self.display_map[(2 * x + 1) * 32 + (2 * y)][BLUE] = LED_BRIGHTNESS_MAX
+                        self.display_map[(2 * x) * 32 + (2 * y + 1)][BLUE] = LED_BRIGHTNESS_MAX
+                        self.display_map[(2 * x + 1) * 32 + (2 * y + 1)][BLUE] = LED_BRIGHTNESS_MAX
+                    else:
+                        break
+
                 # マウス1: 赤
                 for i in range(1024):
                     y = self.share_resouce._path0[2 * i]
@@ -193,13 +214,34 @@ class ProcessField():
                 self.serial_send()
 
             #########################################################
-            # MODE 4: 経路を時間にあわせて表示(iPadシミュレーション結果を表示)
+            # MODE 4: 往路 赤-->ピンク のように通過した経路を薄い色にする
             #########################################################
             elif self.share_resouce._field_mode.value == MODE_4:
                 # 全部白
                 for i in range(LED_NUM):
                     for j in range(DATA_LEN):
                         self.display_map[i][j] = LED_BRIGHTNESS_MIN
+
+                # 障害物を表示
+                for i in range(1024):
+                    y = self.share_resouce._field_obj[2 * i]
+                    x = self.share_resouce._field_obj[2 * i + 1]
+                    if x < 16 and y < 16:
+                        self.display_map[(2 * x) * 32 + (2 * y)][RED] = LED_BRIGHTNESS_MAX
+                        self.display_map[(2 * x + 1) * 32 + (2 * y)][RED] = LED_BRIGHTNESS_MAX
+                        self.display_map[(2 * x) * 32 + (2 * y + 1)][RED] = LED_BRIGHTNESS_MAX
+                        self.display_map[(2 * x + 1) * 32 + (2 * y + 1)][RED] = LED_BRIGHTNESS_MAX
+                        self.display_map[(2 * x) * 32 + (2 * y)][GREEN] = LED_BRIGHTNESS_MAX
+                        self.display_map[(2 * x + 1) * 32 + (2 * y)][GREEN] = LED_BRIGHTNESS_MAX
+                        self.display_map[(2 * x) * 32 + (2 * y + 1)][GREEN] = LED_BRIGHTNESS_MAX
+                        self.display_map[(2 * x + 1) * 32 + (2 * y + 1)][GREEN] = LED_BRIGHTNESS_MAX
+                        self.display_map[(2 * x) * 32 + (2 * y)][BLUE] = LED_BRIGHTNESS_MAX
+                        self.display_map[(2 * x + 1) * 32 + (2 * y)][BLUE] = LED_BRIGHTNESS_MAX
+                        self.display_map[(2 * x) * 32 + (2 * y + 1)][BLUE] = LED_BRIGHTNESS_MAX
+                        self.display_map[(2 * x + 1) * 32 + (2 * y + 1)][BLUE] = LED_BRIGHTNESS_MAX
+                    else:
+                        break
+
                 # マウス1: 赤
                 for i in range(1024):
                     y = self.share_resouce._path0[2 * i]
@@ -283,11 +325,11 @@ class ProcessField():
                 # 全マウスがゴールに到達した場合、MODE 6 パフォーマンス表示に移行
                 is_all_goal = True
                 for i in range(NUM_MOUSE):
-                    print(i, ': ', self.share_resouce._connected_mice[i], ' ', self.share_resouce._field_mode5_is_goal[i])
+                    #print(i, ': ', self.share_resouce._connected_mice[i], ' ', self.share_resouce._field_mode5_is_goal[i])
                     if self.share_resouce._connected_mice[i] == 1 and self.share_resouce._field_mode5_is_goal[i] == 0:
                         is_all_goal = False
                         break
-                print('is_all_goal:', is_all_goal)
+                #print('is_all_goal:', is_all_goal)
                 if is_all_goal:
                     self.share_resouce._field_mode.value = MODE_6
                     self.mode6_timer = 0
@@ -312,9 +354,10 @@ class ProcessField():
 
                 self.mode6_timer += 1
                 print('mode6_timer:', self.mode6_timer)
-                if self.mode6_timer > 10: # 3.3秒
+                if self.mode6_timer > 100: # 3.3秒
                     for i in range(NUM_MOUSE):
                         self.share_resouce._return_event[i] = 1
+                        #self.share_resouce._stop_event[i] = 1 # debug
                     self.share_resouce._field_mode.value = MODE_5
 
             #########################################################
@@ -325,6 +368,27 @@ class ProcessField():
                 for i in range(LED_NUM):
                     for j in range(DATA_LEN):
                         self.display_map[i][j] = LED_BRIGHTNESS_MIN
+
+                # 障害物を表示
+                for i in range(1024):
+                    y = self.share_resouce._field_obj[2 * i]
+                    x = self.share_resouce._field_obj[2 * i + 1]
+                    if x < 16 and y < 16:
+                        self.display_map[(2 * x) * 32 + (2 * y)][RED] = LED_BRIGHTNESS_MAX
+                        self.display_map[(2 * x + 1) * 32 + (2 * y)][RED] = LED_BRIGHTNESS_MAX
+                        self.display_map[(2 * x) * 32 + (2 * y + 1)][RED] = LED_BRIGHTNESS_MAX
+                        self.display_map[(2 * x + 1) * 32 + (2 * y + 1)][RED] = LED_BRIGHTNESS_MAX
+                        self.display_map[(2 * x) * 32 + (2 * y)][GREEN] = LED_BRIGHTNESS_MAX
+                        self.display_map[(2 * x + 1) * 32 + (2 * y)][GREEN] = LED_BRIGHTNESS_MAX
+                        self.display_map[(2 * x) * 32 + (2 * y + 1)][GREEN] = LED_BRIGHTNESS_MAX
+                        self.display_map[(2 * x + 1) * 32 + (2 * y + 1)][GREEN] = LED_BRIGHTNESS_MAX
+                        self.display_map[(2 * x) * 32 + (2 * y)][BLUE] = LED_BRIGHTNESS_MAX
+                        self.display_map[(2 * x + 1) * 32 + (2 * y)][BLUE] = LED_BRIGHTNESS_MAX
+                        self.display_map[(2 * x) * 32 + (2 * y + 1)][BLUE] = LED_BRIGHTNESS_MAX
+                        self.display_map[(2 * x + 1) * 32 + (2 * y + 1)][BLUE] = LED_BRIGHTNESS_MAX
+                    else:
+                        break
+
                 # マウス1: 赤
                 for i in range(1024):
                     y = self.share_resouce._path0[2 * i]

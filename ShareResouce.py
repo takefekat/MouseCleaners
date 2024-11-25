@@ -31,7 +31,7 @@ class ShareResouce():
         self._path1 = mp.Array("i",[255]*1024*2) # マウス1の走行経路(x,y)の列
         self._path2 = mp.Array("i",[255]*1024*2) # マウス2の走行経路(x,y)の列
         self._path3 = mp.Array("i",[255]*1024*2) # マウス3の走行経路(x,y)の列
-
+        self._field_obj   = mp.Array("i",[255]*1024*2) # 障害物(x,y)の列
         # マウスの現在位置
         self._mouse0_pos = mp.Array("i",[0]*2)
         self._mouse1_pos = mp.Array("i",[0]*2)
