@@ -10,6 +10,7 @@ from ProcessWiFiRecv import ProcessWiFiRecv
 from ProcessWiFiSend import ProcessWiFiSend
 from ProcessField import ProcessField
 from ProcessiPad import ProcessiPad
+from ProcessObjRecog import ProcessObjRecog
 
 def main():
     # プロセス間共有リソースの生成
@@ -19,6 +20,7 @@ def main():
     process_field   = ProcessField(share_resouce=share_resouce) # フィールド描画プロセス
     #process_gui     = ProcessGUI(share_resouce=share_resouce)   # GUIプロセス
     process_ipad    = ProcessiPad(share_resouce=share_resouce)  # iPadプロセス
+    process_obj_recog = ProcessObjRecog(share_resouce=share_resouce) # 物体認識プロセス
 
     process_wifi_send = [] # マウスWiFi送信プロセス
     process_wifi_recv = [] # マウスWiFi受信プロセス
@@ -30,6 +32,7 @@ def main():
     #process_gui.start()
     process_field.start()
     process_ipad.start()
+    process_obj_recog.start()
     process_wifi_send[0].start()
     process_wifi_recv[0].start()
     process_wifi_send[1].start()
@@ -49,6 +52,8 @@ def main():
     process_field.process_field.join()   
     process_ipad._process_ipad.terminate()
     process_ipad._process_ipad.join() 
+    process_obj_recog._process_wifi.terminate()
+    process_obj_recog._process_wifi.join()
     for i in range(NUM_MOUSE):
         process_wifi_send[i].close()
         process_wifi_send[i]._process_wifi.terminate()
