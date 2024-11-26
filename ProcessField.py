@@ -6,6 +6,8 @@ import multiprocessing as mp
 from ShareResouce import ShareResouce, NUM_MOUSE
 import serial
 import itertools
+import cv2
+import os
 
 # ===== 定義
 FIELD_SIZE_IS_8X8 = 0
@@ -65,6 +67,24 @@ class ProcessField():
             pass # シリアルポートが開けない場合は無視(debug用)
 
         led_no=0
+
+        image_directory = 'img'
+        image_files = ['GOAL_1.png', 'GOAL_2.png', 'GOAL_3.png', 'GOAL_4.png', 'GOAL_5.png']
+
+        # 画像を順番に読み込んで処理
+        images = []
+        for filename in image_files:
+            # 画像ファイルのパスを作成
+            image_path = os.path.join(image_directory, filename)
+            
+            # 画像をカラーで読み込む
+            image = cv2.imread(image_path, cv2.IMREAD_COLOR)  # カラー画像として読み込む
+            
+            # 画像が読み込めたか確認
+            if image is not None:
+                images.append(image)
+            else:
+                print(f"Failed to load {filename}")
 
         while True:
             start_time = time.time()
@@ -339,12 +359,12 @@ class ProcessField():
             # MODE 6: 全マウスゴール到達 パフォーマンス表示
             #########################################################
             elif self.share_resouce._field_mode.value == MODE_6:
-                color = BLUE
+                self.mode6_timer += 1
+                print('mode6_timer:', self.mode6_timer)
+                
+                chg_img_interval = 15 # 約0.5s
 
-                if self.display_map[led_no][color] == LED_BRIGHTNESS_MAX:
-                    self.display_map[led_no][color] = LED_BRIGHTNESS_MIN
-                else:
-                    self.display_map[led_no][color] = LED_BRIGHTNESS_MAX
+                self.display_map_write_image(images[(self.mode6_timer // 15) % len(images)])
 
                 self.serial_send()
 
@@ -352,8 +372,6 @@ class ProcessField():
                 if led_no > LED_NUM-1:
                     led_no = 0
 
-                self.mode6_timer += 1
-                print('mode6_timer:', self.mode6_timer)
                 if self.mode6_timer > 100: # 3.3秒
                     for i in range(NUM_MOUSE):
                         self.share_resouce._return_event[i] = 1
@@ -468,3 +486,18 @@ class ProcessField():
             self.ser.write(bytes(list(itertools.chain.from_iterable(self.display_map))))
         except:
             pass
+
+    def display_map_write_image(self, image):
+        # 画像が正しく読み込まれたか確認
+        if image is None:
+            print("画像の読み込みに失敗しました")
+        else:
+            # 画像サイズの確認（32x32のサイズを想定）
+            if image.shape[0] == 32 and image.shape[1] == 32:
+                # 画像データをMAP[1024][3]形式に変換
+                self.display_map = image.reshape(-1, 3)  # 1024行3列に変換
+                
+                # MAPの最初の数行を表示（デバッグ用）
+                #print(self.display_map[:10])  # 最初の10個のピクセルデータを表示
+            else:
+                print("画像のサイズが32x32ではありません")
