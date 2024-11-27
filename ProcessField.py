@@ -6,6 +6,8 @@ import multiprocessing as mp
 from ShareResouce import ShareResouce, NUM_MOUSE
 import serial
 import itertools
+import cv2
+import os
 
 # ===== 定義
 FIELD_SIZE_IS_8X8 = 0
@@ -50,6 +52,29 @@ class ProcessField():
         self.share_resouce = share_resouce
         self.process_field = mp.Process(target=self.setup, name="FieldProcess")
         self.share_resouce._field_mode.value = MODE_1
+
+        image_directory = 'img'
+        image_files = ['GOAL_1.png', 'GOAL_2.png', 'GOAL_3.png', 'GOAL_4.png', 'GOAL_5.png']
+
+        # 画像を順番に読み込んで処理
+        self.images = []
+        for filename in image_files:
+            # 画像ファイルのパスを作成
+            image_path = os.path.join(image_directory, filename)
+            
+            # 画像をカラーで読み込む
+            image = cv2.imread(image_path, cv2.IMREAD_COLOR)  # カラー画像として読み込む
+            
+            # 画像が読み込めたか確認
+            if image is not None:
+                self.images.append(image.reshape(-1, 3))
+            else:
+                print(f"Failed to load {filename}")
+
+        print(len(self.images))
+        for i in range(len(self.images)):
+            for j in range(len(self.images[i])):
+                print('(', self.images[i][j][0], self.images[i][j][1], self.images[i][j][2], ')', end=' ')
 
     def setup(self):
         print("ProcessField.setup")
@@ -99,18 +124,15 @@ class ProcessField():
             # MODE 1: 
             ################################
             elif self.share_resouce._field_mode.value == MODE_1:
-                color = BLUE
-
-                if self.display_map[led_no][color] == LED_BRIGHTNESS_MAX:
-                    self.display_map[led_no][color] = LED_BRIGHTNESS_MIN
-                else:
-                    self.display_map[led_no][color] = LED_BRIGHTNESS_MAX
+                chg_img_interval = 15 # 約0.5s
+                goal_idx = (led_no // 10) % len(self.images)
+                for i in range(LED_NUM):
+                    for j in range(DATA_LEN):
+                        self.display_map[i][j] = self.images[goal_idx][i][j]
 
                 self.serial_send()
 
                 led_no += 1
-                if led_no > LED_NUM-1:
-                    led_no = 0
                 
             ################################
             # MODE 2: 
@@ -339,21 +361,16 @@ class ProcessField():
             # MODE 6: 全マウスゴール到達 パフォーマンス表示
             #########################################################
             elif self.share_resouce._field_mode.value == MODE_6:
-                color = BLUE
-
-                if self.display_map[led_no][color] == LED_BRIGHTNESS_MAX:
-                    self.display_map[led_no][color] = LED_BRIGHTNESS_MIN
-                else:
-                    self.display_map[led_no][color] = LED_BRIGHTNESS_MAX
-
-                self.serial_send()
-
-                led_no += 1
-                if led_no > LED_NUM-1:
-                    led_no = 0
-
                 self.mode6_timer += 1
                 print('mode6_timer:', self.mode6_timer)
+                
+                chg_img_interval = 15 # 約0.5s
+                goal_idx = (self.mode6_timer // 15) % len(self.images)
+                for i in range(LED_NUM):
+                    for j in range(DATA_LEN):
+                        self.display_map[i][j] = self.images[goal_idx][i][j]
+
+                self.serial_send()
                 if self.mode6_timer > 100: # 3.3秒
                     for i in range(NUM_MOUSE):
                         self.share_resouce._return_event[i] = 1
