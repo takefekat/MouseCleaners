@@ -95,7 +95,7 @@ class ProcessField():
             start_time = time.time()
 
             ################################
-            # MODE 0: 
+            # MODE 0: やばいやつ
             ################################
             if self.share_resouce._field_mode.value == MODE_0:
                 for i in range(LED_NUM):
@@ -121,7 +121,7 @@ class ProcessField():
                 # print(len(self.display_map))
                 
             ################################
-            # MODE 1: 
+            # MODE 1: 青が順に点灯していく
             ################################
             elif self.share_resouce._field_mode.value == MODE_1:
                 chg_img_interval = 15 # 約0.5s
@@ -135,7 +135,7 @@ class ProcessField():
                 led_no += 1
                 
             ################################
-            # MODE 2: 
+            # MODE 2: 赤、緑、青が順に点灯していく
             ################################
             elif self.share_resouce._field_mode.value == MODE_2:
                 if self.display_map[led_no][color] == LED_BRIGHTNESS_MAX:
@@ -158,189 +158,152 @@ class ProcessField():
             # MODE 3: 経路全体を表示
             ################################
             elif self.share_resouce._field_mode.value == MODE_3:
-                # 全部白
+                # 初期化: 黒
                 for i in range(LED_NUM):
                     for j in range(DATA_LEN):
                         self.display_map[i][j] = LED_BRIGHTNESS_MIN
                 
-                # 障害物を表示
+                # 障害物: 白
                 for i in range(1024):
-                    y = self.share_resouce._field_obj[2 * i]
-                    x = self.share_resouce._field_obj[2 * i + 1]
-                    if x < 16 and y < 16:
-                        self.display_map[(2 * x) * 32 + (2 * y)][RED] = LED_BRIGHTNESS_MAX
-                        self.display_map[(2 * x + 1) * 32 + (2 * y)][RED] = LED_BRIGHTNESS_MAX
-                        self.display_map[(2 * x) * 32 + (2 * y + 1)][RED] = LED_BRIGHTNESS_MAX
-                        self.display_map[(2 * x + 1) * 32 + (2 * y + 1)][RED] = LED_BRIGHTNESS_MAX
-                        self.display_map[(2 * x) * 32 + (2 * y)][GREEN] = LED_BRIGHTNESS_MAX
-                        self.display_map[(2 * x + 1) * 32 + (2 * y)][GREEN] = LED_BRIGHTNESS_MAX
-                        self.display_map[(2 * x) * 32 + (2 * y + 1)][GREEN] = LED_BRIGHTNESS_MAX
-                        self.display_map[(2 * x + 1) * 32 + (2 * y + 1)][GREEN] = LED_BRIGHTNESS_MAX
-                        self.display_map[(2 * x) * 32 + (2 * y)][BLUE] = LED_BRIGHTNESS_MAX
-                        self.display_map[(2 * x + 1) * 32 + (2 * y)][BLUE] = LED_BRIGHTNESS_MAX
-                        self.display_map[(2 * x) * 32 + (2 * y + 1)][BLUE] = LED_BRIGHTNESS_MAX
-                        self.display_map[(2 * x + 1) * 32 + (2 * y + 1)][BLUE] = LED_BRIGHTNESS_MAX
-                    else:
-                        break
+                    x = self.share_resouce._field_obj[2 * i]
+                    y = self.share_resouce._field_obj[2 * i + 1]
+                    if x >= 16 and y >= 16:
+                        break # 障害物おわり
+                    self.set_4led_brightness(x, y, LED_BRIGHTNESS_MAX, LED_BRIGHTNESS_MAX, LED_BRIGHTNESS_MAX) # 白
 
                 # マウス1: 赤
                 for i in range(1024):
-                    y = self.share_resouce._path0[2 * i]
-                    x = self.share_resouce._path0[2 * i + 1]
-                    if x < 16 and y < 16:
-                        self.display_map[(2 * x) * 32 + (2 * y)][RED] = LED_BRIGHTNESS_MAX
-                        self.display_map[(2 * x + 1) * 32 + (2 * y)][RED] = LED_BRIGHTNESS_MAX
-                        self.display_map[(2 * x) * 32 + (2 * y + 1)][RED] = LED_BRIGHTNESS_MAX
-                        self.display_map[(2 * x + 1) * 32 + (2 * y + 1)][RED] = LED_BRIGHTNESS_MAX
-                    else:
-                        break
+                    x = self.share_resouce._path0[2 * i]
+                    y = self.share_resouce._path0[2 * i + 1]
+                    if x >= 16 and y >= 16:
+                        break # 経路おわり
+                    self.set_4led_brightness(x, y, LED_BRIGHTNESS_MAX, LED_BRIGHTNESS_MIN, LED_BRIGHTNESS_MIN) # 赤
+
                 # マウス2: 青
                 for i in range(1024):
-                    y = self.share_resouce._path1[2 * i]
-                    x = self.share_resouce._path1[2 * i + 1]
-                    if x < 16 and y < 16:
-                        self.display_map[(2 * x) * 32 + (2 * y)][BLUE] = LED_BRIGHTNESS_MAX
-                        self.display_map[(2 * x + 1) * 32 + (2 * y)][BLUE] = LED_BRIGHTNESS_MAX
-                        self.display_map[(2 * x) * 32 + (2 * y + 1)][BLUE] = LED_BRIGHTNESS_MAX
-                        self.display_map[(2 * x + 1) * 32 + (2 * y + 1)][BLUE] = LED_BRIGHTNESS_MAX
-                    else:  
-                        break
+                    x = self.share_resouce._path1[2 * i]
+                    y = self.share_resouce._path1[2 * i + 1]
+                    if x >= 16 and y >= 16:
+                        break # 経路おわり
+                    self.set_4led_brightness(x, y, LED_BRIGHTNESS_MIN, LED_BRIGHTNESS_MIN, LED_BRIGHTNESS_MAX) # 青
+
                 # マウス3: 緑
                 for i in range(1024):
-                    y = self.share_resouce._path2[2 * i]
-                    x = self.share_resouce._path2[2 * i + 1]
-                    if x < 16 and y < 16:
-                        self.display_map[(2 * x) * 32 + (2 * y)][GREEN] = LED_BRIGHTNESS_MAX
-                        self.display_map[(2 * x + 1) * 32 + (2 * y)][GREEN] = LED_BRIGHTNESS_MAX
-                        self.display_map[(2 * x) * 32 + (2 * y + 1)][GREEN] = LED_BRIGHTNESS_MAX
-                        self.display_map[(2 * x + 1) * 32 + (2 * y + 1)][GREEN] = LED_BRIGHTNESS_MAX
-                    else:
-                        break
-                # マウス4: 黄色
+                    x = self.share_resouce._path2[2 * i]
+                    y = self.share_resouce._path2[2 * i + 1]
+                    if x >= 16 and y >= 16:
+                        break # 経路おわり
+                    self.set_4led_brightness(x, y, LED_BRIGHTNESS_MIN, LED_BRIGHTNESS_MAX, LED_BRIGHTNESS_MIN) # 緑
+
+                # マウス4: 黄
                 for i in range(1024):
-                    y = self.share_resouce._path3[2 * i]
-                    x = self.share_resouce._path3[2 * i + 1]
-                    if x < 16 and y < 16:
-                        self.display_map[(2 * x) * 32 + (2 * y)][RED] = LED_BRIGHTNESS_MAX
-                        self.display_map[(2 * x + 1) * 32 + (2 * y)][RED] = LED_BRIGHTNESS_MAX
-                        self.display_map[(2 * x) * 32 + (2 * y + 1)][RED] = LED_BRIGHTNESS_MAX
-                        self.display_map[(2 * x + 1) * 32 + (2 * y + 1)][RED] = LED_BRIGHTNESS_MAX
-
-                        self.display_map[(2 * x) * 32 + (2 * y)][GREEN] = LED_BRIGHTNESS_MAX
-                        self.display_map[(2 * x + 1) * 32 + (2 * y)][GREEN] = LED_BRIGHTNESS_MAX
-                        self.display_map[(2 * x) * 32 + (2 * y + 1)][GREEN] = LED_BRIGHTNESS_MAX
-                        self.display_map[(2 * x + 1) * 32 + (2 * y + 1)][GREEN] = LED_BRIGHTNESS_MAX
-                    else:
-                        break
-
+                    x = self.share_resouce._path3[2 * i]
+                    y = self.share_resouce._path3[2 * i + 1]
+                    if x >= 16 and y >= 16:
+                        break # 経路おわり
+                    self.set_4led_brightness(x, y, LED_BRIGHTNESS_MAX, LED_BRIGHTNESS_MAX, LED_BRIGHTNESS_MIN) # 黄
                 self.serial_send()
 
             #########################################################
             # MODE 4: 往路 赤-->ピンク のように通過した経路を薄い色にする
             #########################################################
             elif self.share_resouce._field_mode.value == MODE_4:
-                # 全部白
+                # 初期化: 黒
                 for i in range(LED_NUM):
                     for j in range(DATA_LEN):
                         self.display_map[i][j] = LED_BRIGHTNESS_MIN
 
-                # 障害物を表示
+                # 障害物: 白
                 for i in range(1024):
-                    y = self.share_resouce._field_obj[2 * i]
-                    x = self.share_resouce._field_obj[2 * i + 1]
-                    if x < 16 and y < 16:
-                        self.display_map[(2 * x) * 32 + (2 * y)][RED] = LED_BRIGHTNESS_MAX
-                        self.display_map[(2 * x + 1) * 32 + (2 * y)][RED] = LED_BRIGHTNESS_MAX
-                        self.display_map[(2 * x) * 32 + (2 * y + 1)][RED] = LED_BRIGHTNESS_MAX
-                        self.display_map[(2 * x + 1) * 32 + (2 * y + 1)][RED] = LED_BRIGHTNESS_MAX
-                        self.display_map[(2 * x) * 32 + (2 * y)][GREEN] = LED_BRIGHTNESS_MAX
-                        self.display_map[(2 * x + 1) * 32 + (2 * y)][GREEN] = LED_BRIGHTNESS_MAX
-                        self.display_map[(2 * x) * 32 + (2 * y + 1)][GREEN] = LED_BRIGHTNESS_MAX
-                        self.display_map[(2 * x + 1) * 32 + (2 * y + 1)][GREEN] = LED_BRIGHTNESS_MAX
-                        self.display_map[(2 * x) * 32 + (2 * y)][BLUE] = LED_BRIGHTNESS_MAX
-                        self.display_map[(2 * x + 1) * 32 + (2 * y)][BLUE] = LED_BRIGHTNESS_MAX
-                        self.display_map[(2 * x) * 32 + (2 * y + 1)][BLUE] = LED_BRIGHTNESS_MAX
-                        self.display_map[(2 * x + 1) * 32 + (2 * y + 1)][BLUE] = LED_BRIGHTNESS_MAX
-                    else:
+                    x = self.share_resouce._field_obj[2 * i]
+                    y = self.share_resouce._field_obj[2 * i + 1]
+                    if x >= 16 or y >= 16: # 障害物おわり
+                        break
+                    self.set_4led_brightness(x, y, LED_BRIGHTNESS_MAX, LED_BRIGHTNESS_MAX, LED_BRIGHTNESS_MAX) # 白
+
+                # マウス1: 赤(255,0,0) ピンク(255,120,120)
+                set_r = LED_BRIGHTNESS_MAX
+                set_g = 120
+                set_b = 120
+                for i in range(1024):
+                    x = self.share_resouce._path0[2 * i]
+                    y = self.share_resouce._path0[2 * i + 1]
+                    if x >= 16 or y >= 16: # 経路おわり
                         break
 
-                # マウス1: 赤
-                for i in range(1024):
-                    y = self.share_resouce._path0[2 * i]
-                    x = self.share_resouce._path0[2 * i + 1]
-                    if x < 16 and y < 16:
-                        self.display_map[(2 * x) * 32 + (2 * y)][RED] = LED_BRIGHTNESS_MAX
-                        self.display_map[(2 * x + 1) * 32 + (2 * y)][RED] = LED_BRIGHTNESS_MAX
-                        self.display_map[(2 * x) * 32 + (2 * y + 1)][RED] = LED_BRIGHTNESS_MAX
-                        self.display_map[(2 * x + 1) * 32 + (2 * y + 1)][RED] = LED_BRIGHTNESS_MAX
-                    else:
-                        break
-                    if self.share_resouce._mouse0_pos[0] == y and self.share_resouce._mouse0_pos[1] == x:
-                        next_y = self.share_resouce._path0[2 * (i + 1)]     # 次のマウスのy位置
-                        next_x = self.share_resouce._path0[2 * (i + 1) + 1] # 次のマウスのx位置
-                        if next_x == 255 or next_y == 255:                  # 経路の終端 --> ゴールに到達した
-                            self.share_resouce._field_mode5_is_goal[0] = 1  # ゴール到達フラグを立てる
-                        if self.share_resouce._field_mode5_is_goal[0] == 0: # ゴールに到達していない場合は、マウスの位置までを表示
-                            break
-                # マウス2: 青
-                for i in range(1024):
-                    y = self.share_resouce._path1[2 * i]
-                    x = self.share_resouce._path1[2 * i + 1]
-                    if x < 16 and y < 16:
-                        self.display_map[(2 * x) * 32 + (2 * y)][BLUE] = LED_BRIGHTNESS_MAX
-                        self.display_map[(2 * x + 1) * 32 + (2 * y)][BLUE] = LED_BRIGHTNESS_MAX
-                        self.display_map[(2 * x) * 32 + (2 * y + 1)][BLUE] = LED_BRIGHTNESS_MAX
-                        self.display_map[(2 * x + 1) * 32 + (2 * y + 1)][BLUE] = LED_BRIGHTNESS_MAX
-                    else:  
-                        break
-                    if self.share_resouce._mouse1_pos[0] == y and self.share_resouce._mouse1_pos[1] == x:
-                        next_y = self.share_resouce._path1[2 * (i + 1)]     # 次のマウスのy位置
-                        next_x = self.share_resouce._path1[2 * (i + 1) + 1] # 次のマウスのx位置
-                        if next_x == 255 or next_y == 255:                  # 経路の終端 --> ゴールに到達した
-                            self.share_resouce._field_mode5_is_goal[1] = 1  # ゴール到達フラグを立てる
-                        if self.share_resouce._field_mode5_is_goal[1] == 0: # ゴールに到達していない場合は、マウスの位置までを表示
-                            break
-                # マウス3: 緑
-                for i in range(1024):
-                    y = self.share_resouce._path2[2 * i]
-                    x = self.share_resouce._path2[2 * i + 1]
-                    if x < 16 and y < 16:
-                        self.display_map[(2 * x) * 32 + (2 * y)][GREEN] = LED_BRIGHTNESS_MAX
-                        self.display_map[(2 * x + 1) * 32 + (2 * y)][GREEN] = LED_BRIGHTNESS_MAX
-                        self.display_map[(2 * x) * 32 + (2 * y + 1)][GREEN] = LED_BRIGHTNESS_MAX
-                        self.display_map[(2 * x + 1) * 32 + (2 * y + 1)][GREEN] = LED_BRIGHTNESS_MAX
-                    else:
-                        break
-                    if self.share_resouce._mouse2_pos[0] == y and self.share_resouce._mouse2_pos[1] == x:
-                        next_y = self.share_resouce._path2[2 * (i + 1)]     # 次のマウスのy位置
-                        next_x = self.share_resouce._path2[2 * (i + 1) + 1] # 次のマウスのx位置
-                        if next_x == 255 or next_y == 255:                  # 経路の終端 --> ゴールに到達した
-                            self.share_resouce._field_mode5_is_goal[2] = 1  # ゴール到達フラグを立てる
-                        if self.share_resouce._field_mode5_is_goal[2] == 0: # ゴールに到達していない場合は、マウスの位置までを表示
-                            break
-                # マウス4: 黄色
-                for i in range(1024):
-                    y = self.share_resouce._path3[2 * i]
-                    x = self.share_resouce._path3[2 * i + 1]
-                    if x < 16 and y < 16:
-                        self.display_map[(2 * x) * 32 + (2 * y)][RED] = LED_BRIGHTNESS_MAX
-                        self.display_map[(2 * x + 1) * 32 + (2 * y)][RED] = LED_BRIGHTNESS_MAX
-                        self.display_map[(2 * x) * 32 + (2 * y + 1)][RED] = LED_BRIGHTNESS_MAX
-                        self.display_map[(2 * x + 1) * 32 + (2 * y + 1)][RED] = LED_BRIGHTNESS_MAX
+                    self.set_4led_brightness(x, y, set_r, set_g, set_b)
+
+                    # 経路の中でマウスの位置を探す
+                    if self.share_resouce._mouse0_pos[0] == x and self.share_resouce._mouse0_pos[1] == y: # マウスの位置
+                        set_r = LED_BRIGHTNESS_MAX
+                        set_g = LED_BRIGHTNESS_MIN
+                        set_b = LED_BRIGHTNESS_MIN
                         
-                        self.display_map[(2 * x) * 32 + (2 * y)][GREEN] = LED_BRIGHTNESS_MAX
-                        self.display_map[(2 * x + 1) * 32 + (2 * y)][GREEN] = LED_BRIGHTNESS_MAX
-                        self.display_map[(2 * x) * 32 + (2 * y + 1)][GREEN] = LED_BRIGHTNESS_MAX
-                        self.display_map[(2 * x + 1) * 32 + (2 * y + 1)][GREEN] = LED_BRIGHTNESS_MAX
-                    else:
+                        if self.share_resouce._path0[2 * (i + 1)] == 255 or self.share_resouce._path0[2 * (i + 1) + 1] == 255: 
+                            self.share_resouce._field_mode5_is_goal[0] = 1  # ゴール到達フラグを立てる
+
+                # マウス2: 青(0,0,255) 薄い青(120,255,255)
+                set_r = 120
+                set_g = LED_BRIGHTNESS_MAX
+                set_b = LED_BRIGHTNESS_MAX
+                for i in range(1024):
+                    x = self.share_resouce._path1[2 * i]
+                    y = self.share_resouce._path1[2 * i + 1]
+                    if x >= 16 or y >= 16: # 経路おわり
                         break
-                    if self.share_resouce._mouse3_pos[0] == y and self.share_resouce._mouse3_pos[1] == x:
-                        next_y = self.share_resouce._path3[2 * (i + 1)]     # 次のマウスのy位置
-                        next_x = self.share_resouce._path3[2 * (i + 1) + 1] # 次のマウスのx位置
-                        if next_x == 255 or next_y == 255:                  # 経路の終端 --> ゴールに到達した
+
+                    self.set_4led_brightness(x, y, set_r, set_g, set_b)
+
+                    # 経路の中でマウスの位置を探す
+                    if self.share_resouce._mouse1_pos[0] == x and self.share_resouce._mouse1_pos[1] == y: # マウスの位置
+                        set_r = LED_BRIGHTNESS_MIN
+                        set_g = LED_BRIGHTNESS_MIN
+                        set_b = LED_BRIGHTNESS_MAX
+
+                        if self.share_resouce._path1[2 * (i + 1)] == 255 or self.share_resouce._path1[2 * (i + 1) + 1] == 255: 
+                            self.share_resouce._field_mode5_is_goal[1] = 1  # ゴール到達フラグを立てる
+
+                # マウス3: 緑(0,255,0) うすい緑(120,255,120)
+                set_r = 120
+                set_g = LED_BRIGHTNESS_MAX
+                set_b = 120
+                for i in range(1024):
+                    x = self.share_resouce._path2[2 * i]
+                    y = self.share_resouce._path2[2 * i + 1]
+                    if x >= 16 or y >= 16: # 経路おわり
+                        break
+
+                    self.set_4led_brightness(x, y, set_r, set_g, set_b)
+
+                    # 経路の中でマウスの位置を探す
+                    if self.share_resouce._mouse2_pos[0] == x and self.share_resouce._mouse2_pos[1] == y: # マウスの位置
+                        set_r = LED_BRIGHTNESS_MIN
+                        set_g = LED_BRIGHTNESS_MAX
+                        set_b = LED_BRIGHTNESS_MIN
+
+                        if self.share_resouce._path2[2 * (i + 1)] == 255 or self.share_resouce._path2[2 * (i + 1) + 1] == 255: 
+                            self.share_resouce._field_mode5_is_goal[2] = 1  # ゴール到達フラグを立てる
+
+                # マウス4: 黄(0,255,255) オレンジ(255,170,0)
+                set_r = LED_BRIGHTNESS_MAX
+                set_g = 170
+                set_b = LED_BRIGHTNESS_MIN
+                for i in range(1024):
+                    x = self.share_resouce._path3[2 * i]
+                    y = self.share_resouce._path3[2 * i + 1]
+                    if x >= 16 or y >= 16: # 経路おわり
+                        break
+
+                    self.set_4led_brightness(x, y, set_r, set_g, set_b)
+
+                    # 経路の中でマウスの位置を探す
+                    if self.share_resouce._mouse3_pos[0] == x and self.share_resouce._mouse3_pos[1] == y: # マウスの位置
+                        set_r = LED_BRIGHTNESS_MIN
+                        set_g = LED_BRIGHTNESS_MAX
+                        set_b = LED_BRIGHTNESS_MAX
+
+                        if self.share_resouce._path3[2 * (i + 1)] == 255 or self.share_resouce._path3[2 * (i + 1) + 1] == 255: 
                             self.share_resouce._field_mode5_is_goal[3] = 1  # ゴール到達フラグを立てる
-                        if self.share_resouce._field_mode5_is_goal[3] == 0: # ゴールに到達していない場合は、マウスの位置までを表示
-                            break
 
                 self.serial_send()
 
@@ -378,91 +341,93 @@ class ProcessField():
                     self.share_resouce._field_mode.value = MODE_5
 
             #########################################################
-            # MODE 5: 往路 赤-->ピンク のように通過した経路を薄い色にする
+            # MODE 5: 復路 赤-->ピンク のように通過した経路を薄い色にする
             #########################################################
             elif self.share_resouce._field_mode.value == MODE_4 or self.share_resouce._field_mode.value == MODE_5:
-                # 全部白
+                # 初期化: 黒
                 for i in range(LED_NUM):
                     for j in range(DATA_LEN):
                         self.display_map[i][j] = LED_BRIGHTNESS_MIN
 
-                # 障害物を表示
+                # 障害物: 白
                 for i in range(1024):
-                    y = self.share_resouce._field_obj[2 * i]
-                    x = self.share_resouce._field_obj[2 * i + 1]
-                    if x < 16 and y < 16:
-                        self.display_map[(2 * x) * 32 + (2 * y)][RED] = LED_BRIGHTNESS_MAX
-                        self.display_map[(2 * x + 1) * 32 + (2 * y)][RED] = LED_BRIGHTNESS_MAX
-                        self.display_map[(2 * x) * 32 + (2 * y + 1)][RED] = LED_BRIGHTNESS_MAX
-                        self.display_map[(2 * x + 1) * 32 + (2 * y + 1)][RED] = LED_BRIGHTNESS_MAX
-                        self.display_map[(2 * x) * 32 + (2 * y)][GREEN] = LED_BRIGHTNESS_MAX
-                        self.display_map[(2 * x + 1) * 32 + (2 * y)][GREEN] = LED_BRIGHTNESS_MAX
-                        self.display_map[(2 * x) * 32 + (2 * y + 1)][GREEN] = LED_BRIGHTNESS_MAX
-                        self.display_map[(2 * x + 1) * 32 + (2 * y + 1)][GREEN] = LED_BRIGHTNESS_MAX
-                        self.display_map[(2 * x) * 32 + (2 * y)][BLUE] = LED_BRIGHTNESS_MAX
-                        self.display_map[(2 * x + 1) * 32 + (2 * y)][BLUE] = LED_BRIGHTNESS_MAX
-                        self.display_map[(2 * x) * 32 + (2 * y + 1)][BLUE] = LED_BRIGHTNESS_MAX
-                        self.display_map[(2 * x + 1) * 32 + (2 * y + 1)][BLUE] = LED_BRIGHTNESS_MAX
-                    else:
+                    x = self.share_resouce._field_obj[2 * i]
+                    y = self.share_resouce._field_obj[2 * i + 1]
+                    if x >= 16 or y >= 16: # 障害物おわり
+                        break
+                    self.set_4led_brightness(x, y, LED_BRIGHTNESS_MAX, LED_BRIGHTNESS_MAX, LED_BRIGHTNESS_MAX) # 白
+
+                # マウス1: 赤(255,0,0) ピンク(255,120,120)
+                set_r = LED_BRIGHTNESS_MAX
+                set_g = 120
+                set_b = 120
+                for i in range(1024):
+                    x = self.share_resouce._path0[2 * i]
+                    y = self.share_resouce._path0[2 * i + 1]
+                    if x >= 16 or y >= 16: # 経路おわり
                         break
 
-                # マウス1: 赤
+                    # 経路の中でマウスの位置を探す
+                    if self.share_resouce._mouse0_pos[0] == x and self.share_resouce._mouse0_pos[1] == y: # マウスの位置
+                        set_r = LED_BRIGHTNESS_MAX
+                        set_g = LED_BRIGHTNESS_MIN
+                        set_b = LED_BRIGHTNESS_MIN
+                                            
+                    self.set_4led_brightness(x, y, set_r, set_g, set_b)
+
+                # マウス2: 青(0,0,255) 薄い青(120,255,255)
+                set_r = 120
+                set_g = LED_BRIGHTNESS_MAX
+                set_b = LED_BRIGHTNESS_MAX
                 for i in range(1024):
-                    y = self.share_resouce._path0[2 * i]
-                    x = self.share_resouce._path0[2 * i + 1]
-                    if x < 16 and y < 16:
-                        self.display_map[(2 * x) * 32 + (2 * y)][RED] = LED_BRIGHTNESS_MAX
-                        self.display_map[(2 * x + 1) * 32 + (2 * y)][RED] = LED_BRIGHTNESS_MAX
-                        self.display_map[(2 * x) * 32 + (2 * y + 1)][RED] = LED_BRIGHTNESS_MAX
-                        self.display_map[(2 * x + 1) * 32 + (2 * y + 1)][RED] = LED_BRIGHTNESS_MAX
-                    else:
+                    x = self.share_resouce._path1[2 * i]
+                    y = self.share_resouce._path1[2 * i + 1]
+                    if x >= 16 or y >= 16: # 経路おわり
                         break
-                    if self.share_resouce._mouse0_pos[0] == y and self.share_resouce._mouse0_pos[1] == x:
-                        break
-                # マウス2: 青
+
+                    # 経路の中でマウスの位置を探す
+                    if self.share_resouce._mouse1_pos[0] == x and self.share_resouce._mouse1_pos[1] == y: # マウスの位置
+                        set_r = LED_BRIGHTNESS_MIN
+                        set_g = LED_BRIGHTNESS_MIN
+                        set_b = LED_BRIGHTNESS_MAX
+
+                    self.set_4led_brightness(x, y, set_r, set_g, set_b)
+
+                # マウス3: 緑(0,255,0) うすい緑(120,255,120)
+                set_r = 120
+                set_g = LED_BRIGHTNESS_MAX
+                set_b = 120
                 for i in range(1024):
-                    y = self.share_resouce._path1[2 * i]
-                    x = self.share_resouce._path1[2 * i + 1]
-                    if x < 16 and y < 16:
-                        self.display_map[(2 * x) * 32 + (2 * y)][BLUE] = LED_BRIGHTNESS_MAX
-                        self.display_map[(2 * x + 1) * 32 + (2 * y)][BLUE] = LED_BRIGHTNESS_MAX
-                        self.display_map[(2 * x) * 32 + (2 * y + 1)][BLUE] = LED_BRIGHTNESS_MAX
-                        self.display_map[(2 * x + 1) * 32 + (2 * y + 1)][BLUE] = LED_BRIGHTNESS_MAX
-                    else:  
+                    x = self.share_resouce._path2[2 * i]
+                    y = self.share_resouce._path2[2 * i + 1]
+                    if x >= 16 or y >= 16: # 経路おわり
                         break
-                    if self.share_resouce._mouse1_pos[0] == y and self.share_resouce._mouse1_pos[1] == x:
-                            break
-                # マウス3: 緑
+
+                    # 経路の中でマウスの位置を探す
+                    if self.share_resouce._mouse2_pos[0] == x and self.share_resouce._mouse2_pos[1] == y: # マウスの位置
+                        set_r = LED_BRIGHTNESS_MIN
+                        set_g = LED_BRIGHTNESS_MAX
+                        set_b = LED_BRIGHTNESS_MIN
+
+                    self.set_4led_brightness(x, y, set_r, set_g, set_b)
+
+                # マウス4: 黄(0,255,255) オレンジ(255,170,0)
+                set_r = LED_BRIGHTNESS_MAX
+                set_g = 170
+                set_b = LED_BRIGHTNESS_MIN
                 for i in range(1024):
-                    y = self.share_resouce._path2[2 * i]
-                    x = self.share_resouce._path2[2 * i + 1]
-                    if x < 16 and y < 16:
-                        self.display_map[(2 * x) * 32 + (2 * y)][GREEN] = LED_BRIGHTNESS_MAX
-                        self.display_map[(2 * x + 1) * 32 + (2 * y)][GREEN] = LED_BRIGHTNESS_MAX
-                        self.display_map[(2 * x) * 32 + (2 * y + 1)][GREEN] = LED_BRIGHTNESS_MAX
-                        self.display_map[(2 * x + 1) * 32 + (2 * y + 1)][GREEN] = LED_BRIGHTNESS_MAX
-                    else:
+                    x = self.share_resouce._path3[2 * i]
+                    y = self.share_resouce._path3[2 * i + 1]
+                    if x >= 16 or y >= 16: # 経路おわり
                         break
-                    if self.share_resouce._mouse2_pos[0] == y and self.share_resouce._mouse2_pos[1] == x:
-                            break
-                # マウス4: 黄色
-                for i in range(1024):
-                    y = self.share_resouce._path3[2 * i]
-                    x = self.share_resouce._path3[2 * i + 1]
-                    if x < 16 and y < 16:
-                        self.display_map[(2 * x) * 32 + (2 * y)][RED] = LED_BRIGHTNESS_MAX
-                        self.display_map[(2 * x + 1) * 32 + (2 * y)][RED] = LED_BRIGHTNESS_MAX
-                        self.display_map[(2 * x) * 32 + (2 * y + 1)][RED] = LED_BRIGHTNESS_MAX
-                        self.display_map[(2 * x + 1) * 32 + (2 * y + 1)][RED] = LED_BRIGHTNESS_MAX
-                        
-                        self.display_map[(2 * x) * 32 + (2 * y)][GREEN] = LED_BRIGHTNESS_MAX
-                        self.display_map[(2 * x + 1) * 32 + (2 * y)][GREEN] = LED_BRIGHTNESS_MAX
-                        self.display_map[(2 * x) * 32 + (2 * y + 1)][GREEN] = LED_BRIGHTNESS_MAX
-                        self.display_map[(2 * x + 1) * 32 + (2 * y + 1)][GREEN] = LED_BRIGHTNESS_MAX
-                    else:
-                        break
-                    if self.share_resouce._mouse3_pos[0] == y and self.share_resouce._mouse3_pos[1] == x:
-                            break
+
+                    # 経路の中でマウスの位置を探す
+                    if self.share_resouce._mouse3_pos[0] == x and self.share_resouce._mouse3_pos[1] == y: # マウスの位置
+                        set_r = LED_BRIGHTNESS_MIN
+                        set_g = LED_BRIGHTNESS_MAX
+                        set_b = LED_BRIGHTNESS_MAX
+
+                    self.set_4led_brightness(x, y, set_r, set_g, set_b)
 
                 self.serial_send()
 
@@ -485,3 +450,18 @@ class ProcessField():
             self.ser.write(bytes(list(itertools.chain.from_iterable(self.display_map))))
         except:
             pass
+    
+    def set_4led_brightness(self, x, y, r, g, b):
+        self.display_map[(2 * y) * 32 +     (2 * x)][RED] = r
+        self.display_map[(2 * y + 1) * 32 + (2 * x)][RED] = r
+        self.display_map[(2 * y) * 32 +     (2 * x + 1)][RED] = r
+        self.display_map[(2 * y + 1) * 32 + (2 * x + 1)][RED] = r
+        self.display_map[(2 * y) * 32 +     (2 * x)][GREEN] = g
+        self.display_map[(2 * y + 1) * 32 + (2 * x)][GREEN] = g
+        self.display_map[(2 * y) * 32 +     (2 * x + 1)][GREEN] = g
+        self.display_map[(2 * y + 1) * 32 + (2 * x + 1)][GREEN] = g
+        self.display_map[(2 * y) * 32 +     (2 * x)][BLUE] = b
+        self.display_map[(2 * y + 1) * 32 + (2 * x)][BLUE] = b
+        self.display_map[(2 * y) * 32 +     (2 * x + 1)][BLUE] = b
+        self.display_map[(2 * y + 1) * 32 + (2 * x + 1)][BLUE] = b
+
