@@ -53,6 +53,29 @@ class ProcessField():
         self.process_field = mp.Process(target=self.setup, name="FieldProcess")
         self.share_resouce._field_mode.value = MODE_1
 
+        image_directory = 'img'
+        image_files = ['GOAL_1.png', 'GOAL_2.png', 'GOAL_3.png', 'GOAL_4.png', 'GOAL_5.png']
+
+        # 画像を順番に読み込んで処理
+        self.images = []
+        for filename in image_files:
+            # 画像ファイルのパスを作成
+            image_path = os.path.join(image_directory, filename)
+            
+            # 画像をカラーで読み込む
+            image = cv2.imread(image_path, cv2.IMREAD_COLOR)  # カラー画像として読み込む
+            
+            # 画像が読み込めたか確認
+            if image is not None:
+                self.images.append(image.reshape(-1, 3))
+            else:
+                print(f"Failed to load {filename}")
+
+        print(len(self.images))
+        for i in range(len(self.images)):
+            for j in range(len(self.images[i])):
+                print('(', self.images[i][j][0], self.images[i][j][1], self.images[i][j][2], ')', end=' ')
+
     def setup(self):
         print("ProcessField.setup")
         self.display_map = [[0 for j in range(DATA_LEN)] for i in range(LED_NUM)]
@@ -67,24 +90,6 @@ class ProcessField():
             pass # シリアルポートが開けない場合は無視(debug用)
 
         led_no=0
-
-        image_directory = 'img'
-        image_files = ['GOAL_1.png', 'GOAL_2.png', 'GOAL_3.png', 'GOAL_4.png', 'GOAL_5.png']
-
-        # 画像を順番に読み込んで処理
-        images = []
-        for filename in image_files:
-            # 画像ファイルのパスを作成
-            image_path = os.path.join(image_directory, filename)
-            
-            # 画像をカラーで読み込む
-            image = cv2.imread(image_path, cv2.IMREAD_COLOR)  # カラー画像として読み込む
-            
-            # 画像が読み込めたか確認
-            if image is not None:
-                images.append(image)
-            else:
-                print(f"Failed to load {filename}")
 
         while True:
             start_time = time.time()
@@ -119,18 +124,15 @@ class ProcessField():
             # MODE 1: 
             ################################
             elif self.share_resouce._field_mode.value == MODE_1:
-                color = BLUE
-
-                if self.display_map[led_no][color] == LED_BRIGHTNESS_MAX:
-                    self.display_map[led_no][color] = LED_BRIGHTNESS_MIN
-                else:
-                    self.display_map[led_no][color] = LED_BRIGHTNESS_MAX
+                chg_img_interval = 15 # 約0.5s
+                goal_idx = (led_no // 10) % len(self.images)
+                for i in range(LED_NUM):
+                    for j in range(DATA_LEN):
+                        self.display_map[i][j] = self.images[goal_idx][i][j]
 
                 self.serial_send()
 
                 led_no += 1
-                if led_no > LED_NUM-1:
-                    led_no = 0
                 
             ################################
             # MODE 2: 
@@ -363,15 +365,12 @@ class ProcessField():
                 print('mode6_timer:', self.mode6_timer)
                 
                 chg_img_interval = 15 # 約0.5s
-
-                self.display_map_write_image(images[(self.mode6_timer // 15) % len(images)])
+                goal_idx = (self.mode6_timer // 15) % len(self.images)
+                for i in range(LED_NUM):
+                    for j in range(DATA_LEN):
+                        self.display_map[i][j] = self.images[goal_idx][i][j]
 
                 self.serial_send()
-
-                led_no += 1
-                if led_no > LED_NUM-1:
-                    led_no = 0
-
                 if self.mode6_timer > 100: # 3.3秒
                     for i in range(NUM_MOUSE):
                         self.share_resouce._return_event[i] = 1
@@ -486,18 +485,3 @@ class ProcessField():
             self.ser.write(bytes(list(itertools.chain.from_iterable(self.display_map))))
         except:
             pass
-
-    def display_map_write_image(self, image):
-        # 画像が正しく読み込まれたか確認
-        if image is None:
-            print("画像の読み込みに失敗しました")
-        else:
-            # 画像サイズの確認（32x32のサイズを想定）
-            if image.shape[0] == 32 and image.shape[1] == 32:
-                # 画像データをMAP[1024][3]形式に変換
-                self.display_map = image.reshape(-1, 3)  # 1024行3列に変換
-                
-                # MAPの最初の数行を表示（デバッグ用）
-                #print(self.display_map[:10])  # 最初の10個のピクセルデータを表示
-            else:
-                print("画像のサイズが32x32ではありません")
