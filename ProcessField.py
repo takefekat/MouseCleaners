@@ -183,7 +183,7 @@ class ProcessField():
                 for i in range(1024):
                     x = self.share_resouce._field_obj[2 * i]
                     y = self.share_resouce._field_obj[2 * i + 1]
-                    if x >= 16 and y >= 16:
+                    if x >= 16 or y >= 16:
                         break # 障害物おわり
                     self.set_4led_brightness(x, y, LED_BRIGHTNESS_MAX, LED_BRIGHTNESS_MAX, LED_BRIGHTNESS_MAX) # 白
 
@@ -359,7 +359,7 @@ class ProcessField():
             #########################################################
             # MODE 5: 復路 赤-->ピンク のように通過した経路を薄い色にする
             #########################################################
-            elif self.share_resouce._field_mode.value == MODE_4 or self.share_resouce._field_mode.value == MODE_5:
+            elif  self.share_resouce._field_mode.value == MODE_5:
                 # 初期化: 黒
                 for i in range(LED_NUM):
                     for j in range(DATA_LEN):
