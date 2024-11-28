@@ -26,6 +26,9 @@ class ShareResouce():
         self._field_mode5_is_goal = mp.Array("i",[0]*NUM_MOUSE)
         self._field_timer_count = mp.Value("i",0)
 
+        # 障害物更新用
+        self._obj_update = mp.Value("i",0)
+
         # 走行経路
         self._path0 = mp.Array("i",[255]*1024*2) # マウス0の走行経路(x,y)の列
         self._path1 = mp.Array("i",[255]*1024*2) # マウス1の走行経路(x,y)の列

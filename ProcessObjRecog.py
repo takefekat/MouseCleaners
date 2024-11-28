@@ -41,7 +41,7 @@ class ProcessObjRecog():
                 try:    
                     # クライアントからのメッセージを受信
                     msg_json = self.clientsocket.recv(810)
-                    print(len(msg_json))
+                    #print(len(msg_json))
                     if not msg_json:
                         print("[obj recog] Received empty message, closing connection.")
                         self.clientsocket.close()
@@ -50,17 +50,18 @@ class ProcessObjRecog():
                     print(f"[obj recog] recv: {msg_json}")
 
                     msg_list = json.loads(msg_json.decode('utf-8'))
-                    print('msg_lsit: ', msg_list)
+                    #print('msg_lsit: ', msg_list)
 
-                    obj_idx = 0
-                    for y in range(MAZE_SIZE):
-                        for x in range(MAZE_SIZE):
-                            if msg_list[x][y] == 1:
-                                self.share_resouce._field_obj[obj_idx] = x
-                                obj_idx += 1
-                                self.share_resouce._field_obj[obj_idx] = y
-                                obj_idx += 1
-                    self.share_resouce._field_obj[obj_idx] = 255
+                    if self.share_resouce._obj_update.value == 1:
+                        obj_idx = 0
+                        for y in range(MAZE_SIZE):
+                            for x in range(MAZE_SIZE):
+                                if msg_list[x][y] == 1:
+                                    self.share_resouce._field_obj[obj_idx] = x
+                                    obj_idx += 1
+                                    self.share_resouce._field_obj[obj_idx] = y
+                                    obj_idx += 1
+                        self.share_resouce._field_obj[obj_idx] = 255
 
                 except BrokenPipeError: # リモートのクライアントが接続を閉じた後にデータを送信しようとした場合
                     print(f"[obj recog]: Connection closed by client.")
