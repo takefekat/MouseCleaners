@@ -29,6 +29,7 @@ MODE_3 = 3 # 経路全体を表示
 MODE_4 = 4 # 往路 赤-->ピンク のように通過した経路を薄い色にする
 MODE_5 = 5 # 復路 ピンク-->赤 のように通過した経路を元の色にする
 MODE_6 = 6 # 全マウスゴール到達 パフォーマンス表示
+MODE_7 = 7 # ぴかぴかクリーナーズ
 
 # ===== 設定変数
 SELECT_FIELD_SIZE = FIELD_SIZE_IS_32X32
@@ -55,6 +56,7 @@ class ProcessField():
 
         image_directory = 'img'
         image_files = ['GOAL_1.png', 'GOAL_2.png', 'GOAL_3.png', 'GOAL_4.png', 'GOAL_5.png']
+        pikapika_files = ['pikapika.png']
 
         # 画像を順番に読み込んで処理
         self.images = []
@@ -70,6 +72,19 @@ class ProcessField():
                 self.images.append(image.reshape(-1, 3))
             else:
                 print(f"Failed to load {filename}")
+        self.pika_images = []
+        for filename in pikapika_files:
+            # 画像ファイルのパスを作成
+            image_path = os.path.join(image_directory, filename)
+            
+            # 画像をカラーで読み込む
+            image = cv2.imread(image_path, cv2.IMREAD_COLOR)
+
+            # 画像が読み込めたか確認
+            if image is not None:
+                self.pika_images.append(image.reshape(-1, 3))
+            else:
+                print(f"Failed to load {filename}")
 
         print(len(self.images))
         for i in range(len(self.images)):
@@ -82,6 +97,7 @@ class ProcessField():
         self.display_map.append([0x01])      #最終のエンドフラグは書き込み済み
 
         color = RED
+        mode_cnt = 0
 
         try:
             self.ser = serial.Serial('/dev/tty.usbmodem2201', SELECT_SERIAL_SPEED)  # シリアルポートとボーレートの設定
@@ -431,7 +447,22 @@ class ProcessField():
 
                 self.serial_send()
 
-                
+            #########################################################
+            # MODE 7: ホーム画面 ぴかぴかクリーナーズ
+            #########################################################
+            elif self.share_resouce._field_mode.value == MODE_7:
+
+                chg_img_interval = 15 # 約0.5s
+                goal_idx = (mode_cnt // 15) % len(self.pika_images)
+                for i in range(LED_NUM):
+                    for j in range(DATA_LEN):
+                        self.display_map[i][j] = self.pika_images[goal_idx][i][j]
+
+                self.serial_send()
+                mode_cnt += 1
+                if mode_cnt >= 1e6:
+                    mode_cnt = 0
+
             elapsed_time = time.time() - start_time
             sleep_time = interval - elapsed_time
 
