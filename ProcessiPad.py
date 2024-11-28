@@ -7,6 +7,8 @@ import socket
 from ShareResouce import ShareResouce, NUM_MOUSE
 import json
 
+MAZE_SIZE = 16
+
 class ProcessiPad():
     def __init__(self, share_resouce:ShareResouce) -> None:
         print("[iPad   ]: ProcessiPad.__init__")
@@ -17,6 +19,7 @@ class ProcessiPad():
         print("[iPad   ]: ProcessiPad start")
 
         self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.s.bind(('192.168.251.3', 1251))  # IPとポート番号を指定します
         self.s.listen(5)
 
@@ -86,9 +89,42 @@ class ProcessiPad():
                                 for i in range(NUM_MOUSE):
                                     self.share_resouce._stop_event[i] = 1
 
+                            elif msg_json["signal"] == "mode:home":           
+                                self.share_resouce._field_mode.value = 7 # MODE_7: ぴかぴかクリーナーズ
+
+                            elif msg_json["signal"] == "mode:objRcg":           
+                                self.share_resouce._obj_update.value = 1 # 障害物更新フラグをON
+                                self.share_resouce._field_mode.value = 3 # MODE_3: 障害物&経路表示
+
+                            elif msg_json["signal"] == "get_path":
+                                self.share_resouce._obj_update.value = 0 # 障害物更新フラグをOFF
+                                time.sleep(0.1)
+                                
+                                # 障害物情報をjson encode & 送信
+                                obj_list = {"objs": []}
+                                for i in range(1024):
+                                    if self.share_resouce._field_obj[2*i] == 255 or self.share_resouce._field_obj[2*i+1] == 255:
+                                        break
+                                    point = {}
+                                    point["x"] = self.share_resouce._field_obj[2*i]
+                                    point["y"] = MAZE_SIZE - self.share_resouce._field_obj[2*i+1] - 1
+                                    obj_list["objs"].append(point)
+                                
+                                # デバッグ用に追加
+                                obj_list["objs"].append({"x": 0, "y": MAZE_SIZE - 1 - 1})
+                                obj_list["objs"].append({"x": 0, "y": MAZE_SIZE - 2 - 1})
+                                obj_list["objs"].append({"x": 10, "y": MAZE_SIZE - 2 - 1})
+                                #obj_list["objs"].append({"x": 14, "y": MAZE_SIZE - 14 - 1}) # NG
+                                obj_list["objs"].append({"x": 14, "y": MAZE_SIZE - 13 - 1})
+                                #obj_list["objs"].append({"x": 6, "y": MAZE_SIZE - 8 - 1}) # NG
+                                #obj_list["objs"].append({"x": 6, "y": MAZE_SIZE - 9 - 1}) # NG
+                                obj_list["objs"].append({"x": 2, "y": MAZE_SIZE - 14 - 1}) # NG
+                                self.clientsocket.send(json.dumps(obj_list).encode('utf-8'))
+
                     except json.JSONDecodeError:
                         print("[iPad   ]: Failed to decode JSON message")
 
+                    self.clientsocket.close()
                     break # 一度受信したら終了
 
                 except BrokenPipeError:
