@@ -25,11 +25,12 @@ COLOR_MAX_NUM = 2
 MODE_0 = 0
 MODE_1 = 1
 MODE_2 = 2
-MODE_3 = 3 # 経路全体を表示
+MODE_3 = 3 # 経路&障害物を表示
 MODE_4 = 4 # 往路 赤-->ピンク のように通過した経路を薄い色にする
 MODE_5 = 5 # 復路 ピンク-->赤 のように通過した経路を元の色にする
 MODE_6 = 6 # 全マウスゴール到達 パフォーマンス表示
 MODE_7 = 7 # ぴかぴかクリーナーズ
+MODE_8 = 8 # 障害物表示モード
 
 # ===== 設定変数
 SELECT_FIELD_SIZE = FIELD_SIZE_IS_32X32
@@ -166,6 +167,41 @@ class ProcessField():
                 else:
                     color = BLUE
             
+            #########################################################
+            # MODE 7: ホーム画面 ぴかぴかクリーナーズ
+            #########################################################
+            elif self.share_resouce._field_mode.value == MODE_7:
+
+                chg_img_interval = 15 # 約0.5s
+                goal_idx = (mode_cnt // 15) % len(self.pika_images)
+                for i in range(LED_NUM):
+                    for j in range(DATA_LEN):
+                        self.display_map[i][j] = self.pika_images[goal_idx][i][j]
+
+                self.serial_send()
+                mode_cnt += 1
+                if mode_cnt >= 1e6:
+                    mode_cnt = 0
+
+            #########################################################
+            # MODE 8: 障害物表示モード
+            #########################################################
+            elif self.share_resouce._field_mode.value == MODE_8:
+                # 初期化: 黒
+                for i in range(LED_NUM):
+                    for j in range(DATA_LEN):
+                        self.display_map[i][j] = LED_BRIGHTNESS_MIN
+                
+                # 障害物: 白
+                for i in range(1024):
+                    x = self.share_resouce._field_obj[2 * i]
+                    y = self.share_resouce._field_obj[2 * i + 1]
+                    if x >= 16 or y >= 16:
+                        break # 障害物おわり
+                    self.set_4led_brightness(x, y, LED_BRIGHTNESS_MAX, LED_BRIGHTNESS_MAX, LED_BRIGHTNESS_MAX) # 白
+                
+                self.serial_send()
+
             ################################
             # MODE 3: 経路全体を表示
             ################################
@@ -443,21 +479,6 @@ class ProcessField():
 
                 self.serial_send()
 
-            #########################################################
-            # MODE 7: ホーム画面 ぴかぴかクリーナーズ
-            #########################################################
-            elif self.share_resouce._field_mode.value == MODE_7:
-
-                chg_img_interval = 15 # 約0.5s
-                goal_idx = (mode_cnt // 15) % len(self.pika_images)
-                for i in range(LED_NUM):
-                    for j in range(DATA_LEN):
-                        self.display_map[i][j] = self.pika_images[goal_idx][i][j]
-
-                self.serial_send()
-                mode_cnt += 1
-                if mode_cnt >= 1e6:
-                    mode_cnt = 0
 
             elapsed_time = time.time() - start_time
             sleep_time = interval - elapsed_time

@@ -94,7 +94,7 @@ class ProcessiPad():
 
                             elif msg_json["signal"] == "mode:objRcg":           
                                 self.share_resouce._obj_update.value = 1 # 障害物更新フラグをON
-                                self.share_resouce._field_mode.value = 3 # MODE_3: 障害物&経路表示
+                                self.share_resouce._field_mode.value = 8 # MODE_8: 障害物表示
 
                             elif msg_json["signal"] == "get_path":
                                 self.share_resouce._obj_update.value = 0 # 障害物更新フラグをOFF
