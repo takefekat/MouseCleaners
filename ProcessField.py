@@ -47,6 +47,29 @@ elif SELECT_FIELD_SIZE == FIELD_SIZE_IS_32X32:
 
 LED_NUM = LED_NUM_X * LED_NUM_Y
 
+def read_image(dir, image_filename):
+    # 画像ファイルのパスを作成
+    image_path = os.path.join(dir, image_filename)
+    
+    # 画像をカラーで読み込む
+    image = cv2.imread(image_path, cv2.IMREAD_COLOR)  # カラー画像として読み込む
+    
+    # 画像が読み込めたか確認
+    if image is  None:
+        print(f"Failed to load {image_filename}")
+        return [[0] * DATA_LEN for _ in range(LED_NUM)]
+
+    image = image.reshape(-1, 3)
+    
+    # LED_NUM_X * DATA_LEN の配列に変換
+    ret_image = [[0] * DATA_LEN for _ in range(LED_NUM)]
+    for x in range(16):
+        for y in range(16):
+            in_led_idx = x + y * 16
+            out_led_idx = x + (15 - y) * 16 # 上下反転
+            for rgb in range(DATA_LEN):
+                ret_image[out_led_idx][rgb] = image[in_led_idx][rgb]
+    return ret_image
 
 class ProcessField():
     def __init__(self, share_resouce:ShareResouce) -> None:
@@ -60,33 +83,8 @@ class ProcessField():
         image_files = ['1_goal.png', '2_goal.png', '3_goal.png', '4_goal.png', '5_goal.png', '6_goal.png', '7_goal.png', '8_goal.png', '9_goal.png', '10_goal.png']
         pikapika_files = ['pikapika.png']
 
-        # 画像を順番に読み込んで処理
-        self.images = []
-        for filename in image_files:
-            # 画像ファイルのパスを作成
-            image_path = os.path.join(image_directory, filename)
-            
-            # 画像をカラーで読み込む
-            image = cv2.imread(image_path, cv2.IMREAD_COLOR)  # カラー画像として読み込む
-            
-            # 画像が読み込めたか確認
-            if image is not None:
-                self.images.append(image.reshape(-1, 3))
-            else:
-                print(f"Failed to load {filename}")
-        self.pika_images = []
-        for filename in pikapika_files:
-            # 画像ファイルのパスを作成
-            image_path = os.path.join(image_directory, filename)
-            
-            # 画像をカラーで読み込む
-            image = cv2.imread(image_path, cv2.IMREAD_COLOR)
-
-            # 画像が読み込めたか確認
-            if image is not None:
-                self.pika_images.append(image.reshape(-1, 3))
-            else:
-                print(f"Failed to load {filename}")
+        self.images = [ read_image(image_directory, image_filename) for image_filename in image_files ]
+        self.pika_images = [ read_image(image_directory, image_filename) for image_filename in pikapika_files ]
 
     def setup(self):
         print("ProcessField.setup")
