@@ -55,7 +55,8 @@ class ProcessField():
         self.share_resouce._field_mode.value = MODE_1
 
         image_directory = 'img'
-        image_files = ['GOAL_1.png', 'GOAL_2.png', 'GOAL_3.png', 'GOAL_4.png', 'GOAL_5.png']
+        #image_files = ['GOAL_1.png', 'GOAL_2.png', 'GOAL_3.png', 'GOAL_4.png', 'GOAL_5.png']
+        image_files = ['1_goal.png', '2_goal.png', '3_goal.png', '4_goal.png', '5_goal.png', '6_goal.png', '7_goal.png', '8_goal.png', '9_goal.png', '10_goal.png']
         pikapika_files = ['pikapika.png']
 
         # 画像を順番に読み込んで処理
@@ -85,11 +86,6 @@ class ProcessField():
                 self.pika_images.append(image.reshape(-1, 3))
             else:
                 print(f"Failed to load {filename}")
-
-        print(len(self.images))
-        for i in range(len(self.images)):
-            for j in range(len(self.images[i])):
-                print('(', self.images[i][j][0], self.images[i][j][1], self.images[i][j][2], ')', end=' ')
 
     def setup(self):
         print("ProcessField.setup")
