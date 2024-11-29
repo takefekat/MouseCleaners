@@ -76,7 +76,7 @@ class ProcessField():
         print("ProcessField.__init__")
         self.share_resouce = share_resouce
         self.process_field = mp.Process(target=self.setup, name="FieldProcess")
-        self.share_resouce._field_mode.value = MODE_1
+        self.share_resouce._field_mode.value = MODE_7 # MODE 7: ホーム画面 ぴかぴかクリーナーズ
 
         image_directory = 'img'
         #image_files = ['GOAL_1.png', 'GOAL_2.png', 'GOAL_3.png', 'GOAL_4.png', 'GOAL_5.png']
