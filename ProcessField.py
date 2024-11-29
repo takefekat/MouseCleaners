@@ -60,13 +60,13 @@ def read_image(dir, image_filename):
         return [[0] * DATA_LEN for _ in range(LED_NUM)]
 
     image = image.reshape(-1, 3)
-    
+
     # LED_NUM_X * DATA_LEN の配列に変換
     ret_image = [[0] * DATA_LEN for _ in range(LED_NUM)]
-    for x in range(16):
-        for y in range(16):
-            in_led_idx = x + y * 16
-            out_led_idx = x + (15 - y) * 16 # 上下反転
+    for x in range(32):
+        for y in range(32):
+            in_led_idx = x + (y * 32)
+            out_led_idx = (31- x) + (y * 32) # 上下反転
             for rgb in range(DATA_LEN):
                 ret_image[out_led_idx][rgb] = image[in_led_idx][rgb]
     return ret_image
