@@ -196,7 +196,7 @@ class ProcessField():
                     y = self.share_resouce._field_obj[2 * i + 1]
                     if x >= 16 or y >= 16:
                         break # 障害物おわり
-                    self.set_4led_brightness(x, y, LED_BRIGHTNESS_MAX, LED_BRIGHTNESS_MAX, LED_BRIGHTNESS_MAX) # 白
+                    self.set_4led_brightness(15 - x, 15 - y, LED_BRIGHTNESS_MAX, LED_BRIGHTNESS_MAX, LED_BRIGHTNESS_MAX) # 白
                 
                 self.serial_send()
 
@@ -215,7 +215,7 @@ class ProcessField():
                     y = self.share_resouce._field_obj[2 * i + 1]
                     if x >= 16 or y >= 16:
                         break # 障害物おわり
-                    self.set_4led_brightness(x, y, LED_BRIGHTNESS_MAX, LED_BRIGHTNESS_MAX, LED_BRIGHTNESS_MAX) # 白
+                    self.set_4led_brightness(15 - x, 15 - y, LED_BRIGHTNESS_MAX, LED_BRIGHTNESS_MAX, LED_BRIGHTNESS_MAX) # 白
 
                 # マウス1: 赤
                 for i in range(1024):
@@ -223,7 +223,7 @@ class ProcessField():
                     y = self.share_resouce._path0[2 * i + 1]
                     if x >= 16 and y >= 16:
                         break # 経路おわり
-                    self.set_4led_brightness(x, y, LED_BRIGHTNESS_MAX, LED_BRIGHTNESS_MIN, LED_BRIGHTNESS_MIN) # 赤
+                    self.set_4led_brightness(15 - x, 15 - y, LED_BRIGHTNESS_MAX, LED_BRIGHTNESS_MIN, LED_BRIGHTNESS_MIN) # 赤
 
                 # マウス2: 青
                 for i in range(1024):
@@ -231,7 +231,7 @@ class ProcessField():
                     y = self.share_resouce._path1[2 * i + 1]
                     if x >= 16 and y >= 16:
                         break # 経路おわり
-                    self.set_4led_brightness(x, y, LED_BRIGHTNESS_MIN, LED_BRIGHTNESS_MIN, LED_BRIGHTNESS_MAX) # 青
+                    self.set_4led_brightness(15 - x, 15 - y, LED_BRIGHTNESS_MIN, LED_BRIGHTNESS_MIN, LED_BRIGHTNESS_MAX) # 青
 
                 # マウス3: 緑
                 for i in range(1024):
@@ -239,7 +239,7 @@ class ProcessField():
                     y = self.share_resouce._path2[2 * i + 1]
                     if x >= 16 and y >= 16:
                         break # 経路おわり
-                    self.set_4led_brightness(x, y, LED_BRIGHTNESS_MIN, LED_BRIGHTNESS_MAX, LED_BRIGHTNESS_MIN) # 緑
+                    self.set_4led_brightness(15 - x, 15 - y, LED_BRIGHTNESS_MIN, LED_BRIGHTNESS_MAX, LED_BRIGHTNESS_MIN) # 緑
 
                 # マウス4: 黄
                 for i in range(1024):
@@ -247,7 +247,7 @@ class ProcessField():
                     y = self.share_resouce._path3[2 * i + 1]
                     if x >= 16 and y >= 16:
                         break # 経路おわり
-                    self.set_4led_brightness(x, y, LED_BRIGHTNESS_MAX, LED_BRIGHTNESS_MAX, LED_BRIGHTNESS_MIN) # 黄
+                    self.set_4led_brightness(15 - x, 15 - y, LED_BRIGHTNESS_MAX, LED_BRIGHTNESS_MAX, LED_BRIGHTNESS_MIN) # 黄
                 self.serial_send()
 
             #########################################################
@@ -265,7 +265,7 @@ class ProcessField():
                     y = self.share_resouce._field_obj[2 * i + 1]
                     if x >= 16 or y >= 16: # 障害物おわり
                         break
-                    self.set_4led_brightness(x, y, LED_BRIGHTNESS_MAX, LED_BRIGHTNESS_MAX, LED_BRIGHTNESS_MAX) # 白
+                    self.set_4led_brightness(15 - x, 15 - y, LED_BRIGHTNESS_MAX, LED_BRIGHTNESS_MAX, LED_BRIGHTNESS_MAX) # 白
 
                 # マウス1: 赤(255,0,0) ピンク(255,120,120)
                 set_r = LED_BRIGHTNESS_MAX
@@ -277,7 +277,7 @@ class ProcessField():
                     if x >= 16 or y >= 16: # 経路おわり
                         break
 
-                    self.set_4led_brightness(x, y, set_r, set_g, set_b)
+                    self.set_4led_brightness(15 - x, 15 - y, set_r, set_g, set_b)
 
                     # 経路の中でマウスの位置を探す
                     if self.share_resouce._mouse0_pos[0] == x and self.share_resouce._mouse0_pos[1] == y: # マウスの位置
@@ -298,7 +298,7 @@ class ProcessField():
                     if x >= 16 or y >= 16: # 経路おわり
                         break
 
-                    self.set_4led_brightness(x, y, set_r, set_g, set_b)
+                    self.set_4led_brightness(15 - x, 15 - y, set_r, set_g, set_b)
 
                     # 経路の中でマウスの位置を探す
                     if self.share_resouce._mouse1_pos[0] == x and self.share_resouce._mouse1_pos[1] == y: # マウスの位置
@@ -319,7 +319,7 @@ class ProcessField():
                     if x >= 16 or y >= 16: # 経路おわり
                         break
 
-                    self.set_4led_brightness(x, y, set_r, set_g, set_b)
+                    self.set_4led_brightness(15 - x, 15 - y, set_r, set_g, set_b)
 
                     # 経路の中でマウスの位置を探す
                     if self.share_resouce._mouse2_pos[0] == x and self.share_resouce._mouse2_pos[1] == y: # マウスの位置
@@ -340,7 +340,7 @@ class ProcessField():
                     if x >= 16 or y >= 16: # 経路おわり
                         break
 
-                    self.set_4led_brightness(x, y, set_r, set_g, set_b)
+                    self.set_4led_brightness(15 - x, 15 - y, set_r, set_g, set_b)
 
                     # 経路の中でマウスの位置を探す
                     if self.share_resouce._mouse3_pos[0] == x and self.share_resouce._mouse3_pos[1] == y: # マウスの位置
@@ -401,7 +401,7 @@ class ProcessField():
                     y = self.share_resouce._field_obj[2 * i + 1]
                     if x >= 16 or y >= 16: # 障害物おわり
                         break
-                    self.set_4led_brightness(x, y, LED_BRIGHTNESS_MAX, LED_BRIGHTNESS_MAX, LED_BRIGHTNESS_MAX) # 白
+                    self.set_4led_brightness(15 - x, 15 - y, LED_BRIGHTNESS_MAX, LED_BRIGHTNESS_MAX, LED_BRIGHTNESS_MAX) # 白
 
                 # マウス1: 赤(255,0,0) ピンク(255,120,120)
                 set_r = LED_BRIGHTNESS_MAX
@@ -419,7 +419,7 @@ class ProcessField():
                         set_g = LED_BRIGHTNESS_MIN
                         set_b = LED_BRIGHTNESS_MIN
                                             
-                    self.set_4led_brightness(x, y, set_r, set_g, set_b)
+                    self.set_4led_brightness(15 - x, 15 - y, set_r, set_g, set_b)
 
                 # マウス2: 青(0,0,255) 薄い青(120,255,255)
                 set_r = 120
@@ -437,7 +437,7 @@ class ProcessField():
                         set_g = LED_BRIGHTNESS_MIN
                         set_b = LED_BRIGHTNESS_MAX
 
-                    self.set_4led_brightness(x, y, set_r, set_g, set_b)
+                    self.set_4led_brightness(15 - x, 15 - y, set_r, set_g, set_b)
 
                 # マウス3: 緑(0,255,0) うすい緑(120,255,120)
                 set_r = 120
@@ -455,7 +455,7 @@ class ProcessField():
                         set_g = LED_BRIGHTNESS_MAX
                         set_b = LED_BRIGHTNESS_MIN
 
-                    self.set_4led_brightness(x, y, set_r, set_g, set_b)
+                    self.set_4led_brightness(15 - x, 15 - y, set_r, set_g, set_b)
 
                 # マウス4: 黄(0,255,255) オレンジ(255,170,0)
                 set_r = LED_BRIGHTNESS_MAX
@@ -473,7 +473,7 @@ class ProcessField():
                         set_g = LED_BRIGHTNESS_MAX
                         set_b = LED_BRIGHTNESS_MAX
 
-                    self.set_4led_brightness(x, y, set_r, set_g, set_b)
+                    self.set_4led_brightness(15 - x, 15 - y, set_r, set_g, set_b)
 
                 self.serial_send()
 
