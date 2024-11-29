@@ -29,11 +29,11 @@ class ProcessObjRecog():
             time.sleep(0.1)
 
             self.clientsocket, address = self.s.accept()
-            print(f"[obj recog]: Connection from {address} has been established.")
+            #print(f"[obj recog]: Connection from {address} has been established.")
 
-            # マウス新規接続時初期化
-            if self.clientsocket:
-                print("[obj recog] socket connected.")
+            # 新規接続時初期化
+            #if self.clientsocket:
+                #print("[obj recog] socket connected.")
 
             # self.clientsocket が有効の場合、以下の処理を実行
             while self.clientsocket:
@@ -43,11 +43,11 @@ class ProcessObjRecog():
                     msg_json = self.clientsocket.recv(810)
                     #print(len(msg_json))
                     if not msg_json:
-                        print("[obj recog] Received empty message, closing connection.")
+                        #print("[obj recog] Received empty message, closing connection.")
                         self.clientsocket.close()
                         break
 
-                    print(f"[obj recog] recv: {msg_json}")
+                    # print(f"[obj recog] recv: {msg_json}")
 
                     msg_list = json.loads(msg_json.decode('utf-8'))
                     #print('msg_lsit: ', msg_list)
@@ -74,16 +74,16 @@ class ProcessObjRecog():
                         self.share_resouce._field_obj[obj_idx] = 255
 
                 except BrokenPipeError: # リモートのクライアントが接続を閉じた後にデータを送信しようとした場合
-                    print(f"[obj recog]: Connection closed by client.")
+                    #print(f"[obj recog]: Connection closed by client.")
                     self.clientsocket.close()
                     break
                 except ConnectionResetError: # クライアントが切断した場合
-                    print(f"[obj recog]: Connection reset by client.")
+                    #print(f"[obj recog]: Connection reset by client.")
                     self.clientsocket.close()
                     break
 
                 
-            print(f"[obj recog]: socket closed.")
+            #print(f"[obj recog]: socket closed.")
 
             self.clientsocket.close()
 

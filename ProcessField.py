@@ -373,12 +373,14 @@ class ProcessField():
 
                 # 全マウスがゴールに到達した場合、MODE 6 パフォーマンス表示に移行
                 is_all_goal = True
+                print("goal mouce:")
                 for i in range(NUM_MOUSE):
-                    #print(i, ': ', self.share_resouce._connected_mice[i], ' ', self.share_resouce._field_mode5_is_goal[i])
+                    print(i, ': ', self.share_resouce._connected_mice[i], ' ', self.share_resouce._field_mode5_is_goal[i], " --> ", end="")
+                    print((self.share_resouce._connected_mice[i] == 0 or self.share_resouce._field_mode5_is_goal[i] == 1))
                     if self.share_resouce._connected_mice[i] == 1 and self.share_resouce._field_mode5_is_goal[i] == 0:
                         is_all_goal = False
                         break
-                #print('is_all_goal:', is_all_goal)
+                print("")
                 if is_all_goal:
                     self.share_resouce._field_mode.value = MODE_6
                     self.mode6_timer = 0
@@ -389,7 +391,7 @@ class ProcessField():
             #########################################################
             elif self.share_resouce._field_mode.value == MODE_6:
                 self.mode6_timer += 1
-                print('mode6_timer:', self.mode6_timer)
+                #print('mode6_timer:', self.mode6_timer)
                 
                 chg_img_interval = 15 # 約0.5s
                 goal_idx = (self.mode6_timer // 15) % len(self.images)
