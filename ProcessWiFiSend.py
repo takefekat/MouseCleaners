@@ -37,13 +37,9 @@ class ProcessWiFiSend():
                 self.share_resouce._stop_event[self.mouse_idx] = 0
                 self.share_resouce._return_event[self.mouse_idx] = 0
                 self.share_resouce._field_mode5_is_goal[self.mouse_idx] = 0
-                self.share_resouce._connected_mice[self.mouse_idx] = 1
-                mouce_num = sum(self.share_resouce._connected_mice)
-                print("[mouce {self.mouse_idx} connected. MOUCE_NUM =", mouce_num)
 
             # self.clientsocket が有効の場合、以下の処理を実行
             while self.clientsocket:
-                self.share_resouce._connected_mice[self.mouse_idx] = 1  # ソケット接続中 --> マウスあり
                 time.sleep(0.5)
                 try:
                     # mouse_idx の経路が設定されていれば送信
@@ -70,7 +66,12 @@ class ProcessWiFiSend():
                         continue
                     
                     send_msg = self.make_send_msg(send_data)
-                    self.clientsocket.send(send_msg)
+                    try:
+                        self.clientsocket.send(send_msg)
+                    except socket.timeout:
+                        print(f"[mouce {self.mouse_idx} send]: disconnected.")
+                        self.share_resouce._connected_mice[self.mouse_idx] = 0
+                        break
                     print(f"[mouce {self.mouse_idx} send]: send :", send_msg)
 
 

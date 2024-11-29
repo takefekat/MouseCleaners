@@ -39,31 +39,33 @@ class ProcessWiFiRecv():
                 self.share_resouce._stop_event[self.mouse_idx] = 0
                 self.share_resouce._return_event[self.mouse_idx] = 0
                 self.share_resouce._field_mode5_is_goal[self.mouse_idx] = 0
-                self.share_resouce._connected_mice[self.mouse_idx] = 1
-                mouce_num = sum(self.share_resouce._connected_mice)
-                print("[mouce {self.mouse_idx} connected. MOUCE_NUM =", mouce_num)
 
             msg_buf = [0] * RECV_BUF_SIZE            
             msg_idx = 0
             check_sum = 0
             # self.clientsocket が有効の場合、以下の処理を実行
             while self.clientsocket:
-                self.share_resouce._connected_mice[self.mouse_idx] = 1  # ソケット接続中 --> マウスあり
                 time.sleep(1/40)
                 try:    
                     # クライアントからのメッセージを受信
                     # プロトコルに従って解釈
-                    msg = self.clientsocket.recv(20)
+                    self.clientsocket.settimeout(1.5)
+                    try:
+                        msg = self.clientsocket.recv(20)
+                    except socket.timeout:
+                        print(f"[mouce {self.mouse_idx} send]: disconnected.")
+                        self.share_resouce._connected_mice[self.mouse_idx] = 0
+                        break
                     for c in msg:
                         if msg_idx == 0: # header: < が来たら受信開始
-                            if c == 60:                        
-                                msg_buf[0] = 60
+                            if c == 60 or c == 62:                        
+                                msg_buf[0] = c
                                 msg_idx += 1
                             else:
                                 msg_buf = [0] * RECV_BUF_SIZE
                                 msg_idx = 0
                                 check_sum = 0
-                                print(f"[mouce {self.mouse_idx} recv]: protocol header error. recv --> ", c)
+                                #print(f"[mouce {self.mouse_idx} recv]: protocol header error. recv --> ", c)
                         elif msg_idx == 1: # data_len
                             msg_buf[1] = c
                             msg_idx += 1
@@ -150,7 +152,8 @@ class ProcessWiFiRecv():
             print(f"[mouce {MOUCE_NAME[self.mouse_idx]}]: ##### ERROR ##### MOUSE ")
             for i in range(NUM_MOUSE):
                 self.share_resouce._stop_event[i] = 1
-    
+        self.share_resouce._connected_mice[self.mouse_idx] = 1
+
     def start(self):
         self._process_wifi.start()
 
