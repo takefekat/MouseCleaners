@@ -96,7 +96,15 @@ class ProcessiPad():
                                 self.share_resouce._obj_update.value = 1 # 障害物更新フラグをON
                                 self.share_resouce._field_mode.value = 8 # MODE_8: 障害物表示
 
-                            elif msg_json["signal"] == "get_path":
+                            elif msg_json["signal"] == "mode:pathFind":
+                                # 経路情報をリセット
+                                for i in range(1024):
+                                    self.share_resouce._path0[i] = 255
+                                    self.share_resouce._path1[i] = 255
+                                    self.share_resouce._path2[i] = 255
+                                    self.share_resouce._path3[i] = 255
+
+                            elif msg_json["signal"] == "get_path": # 紛らわしいが障害物を受信
                                 self.share_resouce._obj_update.value = 0 # 障害物更新フラグをOFF
                                 time.sleep(0.1)
                                 
