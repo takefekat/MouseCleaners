@@ -3,6 +3,7 @@ import sys
 import time
 import multiprocessing as mp
 import socket
+import random
 
 from ShareResouce import ShareResouce, NUM_MOUSE
 import json
@@ -127,14 +128,23 @@ class ProcessiPad():
                                     obj_list["objs"].append(point)
                                 
                                 # デバッグ用に追加
-                                obj_list["objs"].append({"x": 0, "y": MAZE_SIZE - 1 - 1})
-                                obj_list["objs"].append({"x": 0, "y": MAZE_SIZE - 2 - 1})
-                                obj_list["objs"].append({"x": 10, "y": MAZE_SIZE - 2 - 1})
+                                #obj_list = {"objs": []}
+                                ## ランダムに障害物を配置
+                                #for i in range(10):
+                                #    # 0~15の乱数を生成
+                                #    x = random.randint(0, MAZE_SIZE - 1)
+                                #    y = random.randint(0, MAZE_SIZE - 1)
+                                #    if (x == 0 and y == 0) or (x == 0 and y == 15) or (x == 15 and y == 0) or (x == 15 and y == 15):
+                                #        continue
+                                #    obj_list["objs"].append({"x": x, "y": y})
+                                #obj_list["objs"].append({"x": 0, "y": MAZE_SIZE - 1 - 1})
+                                #obj_list["objs"].append({"x": 0, "y": MAZE_SIZE - 2 - 1})
+                                #obj_list["objs"].append({"x": 10, "y": MAZE_SIZE - 2 - 1})
                                 #obj_list["objs"].append({"x": 14, "y": MAZE_SIZE - 14 - 1}) # NG
-                                obj_list["objs"].append({"x": 14, "y": MAZE_SIZE - 13 - 1})
+                                #obj_list["objs"].append({"x": 14, "y": MAZE_SIZE - 13 - 1})
                                 #obj_list["objs"].append({"x": 6, "y": MAZE_SIZE - 8 - 1}) # NG
                                 #obj_list["objs"].append({"x": 6, "y": MAZE_SIZE - 9 - 1}) # NG
-                                obj_list["objs"].append({"x": 2, "y": MAZE_SIZE - 14 - 1}) # NG
+                                #obj_list["objs"].append({"x": 2, "y": MAZE_SIZE - 14 - 1}) # NG
                                 self.clientsocket.send(json.dumps(obj_list).encode('utf-8'))
 
                     except json.JSONDecodeError:
