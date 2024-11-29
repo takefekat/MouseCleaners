@@ -198,6 +198,24 @@ class ProcessField():
                         break # 障害物おわり
                     self.set_4led_brightness(15 - x, 15 - y, LED_BRIGHTNESS_MAX, LED_BRIGHTNESS_MAX, LED_BRIGHTNESS_MAX) # 白
                 
+                # マウス初期値
+                self.set_4led_brightness(0, 0, LED_BRIGHTNESS_MIN, LED_BRIGHTNESS_MAX, LED_BRIGHTNESS_MIN) # 緑
+                self.set_4led_brightness(0, 15, LED_BRIGHTNESS_MAX, LED_BRIGHTNESS_MAX, LED_BRIGHTNESS_MIN) # 黄
+                self.set_4led_brightness(15, 0, LED_BRIGHTNESS_MAX, LED_BRIGHTNESS_MIN, LED_BRIGHTNESS_MIN) # 赤
+                self.set_4led_brightness(15, 15, LED_BRIGHTNESS_MIN, LED_BRIGHTNESS_MIN, LED_BRIGHTNESS_MAX) # 青
+                self.set_4led_brightness(0, 1, LED_BRIGHTNESS_MIN, LED_BRIGHTNESS_MAX, LED_BRIGHTNESS_MIN) # 緑
+                self.set_4led_brightness(0, 14, LED_BRIGHTNESS_MAX, LED_BRIGHTNESS_MAX, LED_BRIGHTNESS_MIN) # 黄
+                self.set_4led_brightness(15, 1, LED_BRIGHTNESS_MAX, LED_BRIGHTNESS_MIN, LED_BRIGHTNESS_MIN) # 赤
+                self.set_4led_brightness(15, 14, LED_BRIGHTNESS_MIN, LED_BRIGHTNESS_MIN, LED_BRIGHTNESS_MAX) # 青
+                self.set_4led_brightness(1, 0, LED_BRIGHTNESS_MIN, LED_BRIGHTNESS_MAX, LED_BRIGHTNESS_MIN) # 緑
+                self.set_4led_brightness(1, 15, LED_BRIGHTNESS_MAX, LED_BRIGHTNESS_MAX, LED_BRIGHTNESS_MIN) # 黄
+                self.set_4led_brightness(14, 0, LED_BRIGHTNESS_MAX, LED_BRIGHTNESS_MIN, LED_BRIGHTNESS_MIN) # 赤
+                self.set_4led_brightness(14, 15, LED_BRIGHTNESS_MIN, LED_BRIGHTNESS_MIN, LED_BRIGHTNESS_MAX) # 青
+                self.set_4led_brightness(1, 1, LED_BRIGHTNESS_MIN, LED_BRIGHTNESS_MAX, LED_BRIGHTNESS_MIN) # 緑
+                self.set_4led_brightness(1, 14, LED_BRIGHTNESS_MAX, LED_BRIGHTNESS_MAX, LED_BRIGHTNESS_MIN) # 黄
+                self.set_4led_brightness(14, 1, LED_BRIGHTNESS_MAX, LED_BRIGHTNESS_MIN, LED_BRIGHTNESS_MIN) # 赤
+                self.set_4led_brightness(14, 14, LED_BRIGHTNESS_MIN, LED_BRIGHTNESS_MIN, LED_BRIGHTNESS_MAX) # 青
+                
                 self.serial_send()
 
             ################################

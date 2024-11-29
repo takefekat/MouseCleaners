@@ -57,6 +57,16 @@ class ProcessObjRecog():
                         for y in range(MAZE_SIZE):
                             for x in range(MAZE_SIZE):
                                 if msg_list[x][y] == 1:
+                                    # 4隅はマウスなので無視する
+                                    if (x == 0 and y == 0) or (x == 0 and y == 15) or (x == 15 and y == 0) or (x == 15 and y == 15):
+                                        continue
+                                    if (x == 1 and y == 0) or (x == 1 and y == 15) or (x == 14 and y == 0) or (x == 14 and y == 15):
+                                        continue
+                                    if (x == 0 and y == 1) or (x == 0 and y == 14) or (x == 15 and y == 1) or (x == 15 and y == 14):
+                                        continue
+                                    if (x == 1 and y == 1) or (x == 1 and y == 14) or (x == 14 and y == 1) or (x == 14 and y == 14):
+                                        continue
+
                                     self.share_resouce._field_obj[obj_idx] = x
                                     obj_idx += 1
                                     self.share_resouce._field_obj[obj_idx] = y
