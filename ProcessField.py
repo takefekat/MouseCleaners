@@ -348,7 +348,7 @@ class ProcessField():
                         if self.share_resouce._path2[2 * (i + 1)] == 255 or self.share_resouce._path2[2 * (i + 1) + 1] == 255: 
                             self.share_resouce._field_mode5_is_goal[2] = 1  # ゴール到達フラグを立てる
 
-                # マウス4: 黄(0,255,255) オレンジ(255,170,0)
+                # マウス4: 黄(255,255,0) オレンジ(255,170,0)
                 set_r = LED_BRIGHTNESS_MAX
                 set_g = 170
                 set_b = LED_BRIGHTNESS_MIN
@@ -362,9 +362,9 @@ class ProcessField():
 
                     # 経路の中でマウスの位置を探す
                     if self.share_resouce._mouse3_pos[0] == x and self.share_resouce._mouse3_pos[1] == y: # マウスの位置
-                        set_r = LED_BRIGHTNESS_MIN
+                        set_r = LED_BRIGHTNESS_MAX
                         set_g = LED_BRIGHTNESS_MAX
-                        set_b = LED_BRIGHTNESS_MAX
+                        set_b = LED_BRIGHTNESS_MIN
 
                         if self.share_resouce._path3[2 * (i + 1)] == 255 or self.share_resouce._path3[2 * (i + 1) + 1] == 255: 
                             self.share_resouce._field_mode5_is_goal[3] = 1  # ゴール到達フラグを立てる
@@ -477,7 +477,7 @@ class ProcessField():
 
                     self.set_4led_brightness(15 - x, 15 - y, set_r, set_g, set_b)
 
-                # マウス4: 黄(0,255,255) オレンジ(255,170,0)
+                # マウス4: 黄(255,255,0) オレンジ(255,170,0)
                 set_r = LED_BRIGHTNESS_MAX
                 set_g = 170
                 set_b = LED_BRIGHTNESS_MIN
@@ -489,9 +489,9 @@ class ProcessField():
 
                     # 経路の中でマウスの位置を探す
                     if self.share_resouce._mouse3_pos[0] == x and self.share_resouce._mouse3_pos[1] == y: # マウスの位置
-                        set_r = LED_BRIGHTNESS_MIN
+                        set_r = LED_BRIGHTNESS_MAX
                         set_g = LED_BRIGHTNESS_MAX
-                        set_b = LED_BRIGHTNESS_MAX
+                        set_b = LED_BRIGHTNESS_MIN
 
                     self.set_4led_brightness(15 - x, 15 - y, set_r, set_g, set_b)
 
