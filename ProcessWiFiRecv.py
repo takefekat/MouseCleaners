@@ -144,7 +144,7 @@ class ProcessWiFiRecv():
             print(f"[mouce {self.mouse_idx}]: mouse_id error")
 
         # バッテリー電圧が低い場合は警告
-        if msg_buf[8] < 110:
+        if msg_buf[8] < 110 and msg_buf[8] != 0:
             print(f"[mouce {MOUCE_NAME[self.mouse_idx]}]: ##### WARNING ##### Low battery !!", msg_buf[8] / 10, "V") 
 
         # エラーがある場合は全マウスを停止
