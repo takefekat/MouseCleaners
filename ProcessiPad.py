@@ -5,10 +5,14 @@ import multiprocessing as mp
 import socket
 import random
 
+from graphillion import GraphSet
+import graphillion.tutorial as tl  # helper functions just for the tutorial
+
 from ShareResouce import ShareResouce, NUM_MOUSE
 import json
 
 MAZE_SIZE = 16
+V = 64
 
 class ProcessiPad():
     def __init__(self, share_resouce:ShareResouce) -> None:
@@ -18,6 +22,19 @@ class ProcessiPad():
 
     def setup(self):
         print("[iPad   ]: ProcessiPad start")
+        universe = tl.grid(7, 7)
+        GraphSet.set_universe(universe)
+        #tl.draw(universe)  # show a pop-up window of our universe
+
+        # 頂点1からの長さ2以下のパスを列挙
+        lower_len = 55
+        start = 1
+        self.pathAll = GraphSet.paths(start, 2).larger(lower_len)
+        for i in range(3, V+1):
+            self.pathAll = self.pathAll.union(GraphSet.paths(start, i).larger(lower_len))
+            print("[ZDD   ]", i, "/64, sum(paths):", len(self.pathAll), "(lower_len: ", lower_len, ")")
+        # デバッグ用
+        #self.pathAll = GraphSet.paths(start, 57)
 
         self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -115,6 +132,20 @@ class ProcessiPad():
 
                             elif msg_json["signal"] == "get_path": # 紛らわしいが障害物を受信
                                 self.share_resouce._obj_update.value = 0 # 障害物更新フラグをOFF
+                                ## デバッグ：ランダムに障害物を配置
+                                #idx=0
+                                #for i in range(10):
+                                #    # 0~15の乱数を生成
+                                #    x = random.randint(0, MAZE_SIZE - 1)
+                                #    y = random.randint(0, MAZE_SIZE - 1)
+                                #    if (x == 0 and y == 0) or (x == 0 and y == 15) or (x == 15 and y == 0) or (x == 15 and y == 15):
+                                #        continue
+                                #    self.share_resouce._field_obj[idx] = x
+                                #    idx += 1
+                                #    self.share_resouce._field_obj[idx] = y
+                                #    idx += 1
+                                #self.share_resouce._field_obj[idx] = 255
+
                                 time.sleep(0.1)
                                 
                                 # 障害物情報をjson encode & 送信
@@ -147,6 +178,61 @@ class ProcessiPad():
                                 #obj_list["objs"].append({"x": 2, "y": MAZE_SIZE - 14 - 1}) # NG
                                 self.clientsocket.send(json.dumps(obj_list).encode('utf-8'))
 
+                            elif msg_json["signal"] == "get_auto_path": # 4経路のパスを受信
+                                # 障害物の場所を除いたパス集合を計算
+                                paths = {}
+                                for mouce_idx in range(NUM_MOUSE):
+                                    path_set = self.pathAll
+                                    # 障害物を通らないパス集合を計算
+                                    for i in range(1024):
+                                        if self.share_resouce._field_obj[2*i] == 255 or self.share_resouce._field_obj[2*i+1] == 255:
+                                            break
+                                        obj_x = self.share_resouce._field_obj[2*i]
+                                        obj_y = self.share_resouce._field_obj[2*i+1]
+
+                                        # 障害物の場所を除いたパス集合を計算
+                                        if mouce_idx == 0 and obj_x < 8 and obj_y >= 8:
+                                            path_set = path_set.excluding(obj_x + ((15 - obj_y) * 8) + 1)
+                                        elif mouce_idx == 1 and obj_x >= 8 and obj_y >= 8:
+                                            path_set = path_set.excluding((15 - obj_x) + ((15 - obj_y) * 8) + 1)
+                                        elif mouce_idx == 2 and obj_x < 8 and obj_y < 8:
+                                            path_set = path_set.excluding(obj_x + (obj_y * 8) + 1)
+                                        elif mouce_idx == 3 and obj_x >= 8 and obj_y < 8:
+                                            path_set = path_set.excluding((15 - obj_x) + (obj_y * 8) + 1)
+
+                                    print(mouce_idx, "len(path_set): ", len(path_set))
+                                    # 最長パスを取得
+                                    max_path_zdd = []
+                                    for path in path_set.max_iter():                                      
+                                        max_path_zdd = path
+                                        #tl.draw(path)
+                                        break
+                                    # 辺集合をx,y座標列に変換
+                                    cur_node = 1
+                                    is_reached = set()
+                                    is_reached.add(cur_node)
+                                    xy_path = []
+                                    x, y = self.convert_node_xy(mouce_idx, cur_node)
+                                    xy_path.append({"x" : x, "y" : y})
+                                    for i in range(len(max_path_zdd)):
+                                        for edge in max_path_zdd:
+                                            if edge[0] == cur_node and edge[1] not in is_reached:
+                                                cur_node = edge[1]
+                                            elif edge[1] == cur_node and edge[0] not in is_reached:
+                                                cur_node = edge[0]
+                                            else:
+                                                continue
+                                            is_reached.add(cur_node)
+                                            x, y = self.convert_node_xy(mouce_idx, cur_node)
+                                            xy_path.append({"x" : x, "y" : y})
+                                            break
+
+                                    paths['mouce' + str(mouce_idx)] = xy_path
+                                print(paths)
+                                                                    
+                                self.clientsocket.send(json.dumps(paths).encode('utf-8'))
+
+
                     except json.JSONDecodeError:
                         print("[iPad   ]: Failed to decode JSON message")
 
@@ -157,6 +243,20 @@ class ProcessiPad():
                     print("[iPad   ]: Connection closed by client.")
                     self.clientsocket.close()
                     break
+
+    def convert_node_xy(self, mouce_idx, node_no):
+        x = (node_no - 1) % 8
+        y = (node_no - 1) // 8
+        if mouce_idx == 0:
+            return x, y
+        elif mouce_idx == 1:
+            return 15 - x, y
+        elif mouce_idx == 2:
+            return x, (15 - y)
+        elif mouce_idx == 3:
+            return 15 - x, (15 - y)
+        else:
+            print("[iPad   ]: mouce_idx error")
 
     def start(self):
         self._process_ipad.start()
