@@ -53,7 +53,7 @@ class ProcessWiFiRecv():
                     try:
                         msg = self.clientsocket.recv(20)
                     except socket.timeout:
-                        print(f"[mouce {self.mouse_idx} send]: disconnected.")
+                        print(f"[mouce {self.mouse_idx} recv]: disconnected.")
                         self.share_resouce._connected_mice[self.mouse_idx] = 0
                         break
                     for c in msg:
@@ -142,11 +142,12 @@ class ProcessWiFiRecv():
                 self.share_resouce._mouse3_pos[1] = y
         else:
             print(f"[mouce {self.mouse_idx}]: mouse_id error")
+            pass
 
         # バッテリー電圧が低い場合は警告
         if msg_buf[8] < 110 and msg_buf[8] != 0:
             print(f"[mouce {MOUCE_NAME[self.mouse_idx]}]: ##### WARNING ##### Low battery !!", msg_buf[8] / 10, "V") 
-
+            pass
         # エラーがある場合は全マウスを停止
         if msg_buf[10] == 1:
             print(f"[mouce {MOUCE_NAME[self.mouse_idx]}]: ##### ERROR ##### MOUSE ")

@@ -14,6 +14,7 @@ class ShareResouce():
         self._start_event       = mp.Array("i",[0]*NUM_MOUSE)   # 往路走行開始イベント
         self._stop_event        = mp.Array("i",[0]*NUM_MOUSE)   # 走行停止イベント
         self._return_event      = mp.Array("i",[0]*NUM_MOUSE)   # 復路走行停止イベント
+        self._dummy_event      = mp.Array("i",[0]*NUM_MOUSE)   # 復路走行停止イベント
         self._gui_update_event  = mp.Event()                    # GUI更新イベント
 
         self._gui_close_event = mp.Event()   # 全プロセス終了イベント(GUI終了イベント)
