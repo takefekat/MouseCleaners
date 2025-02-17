@@ -82,9 +82,11 @@ class ProcessField():
         #image_files = ['GOAL_1.png', 'GOAL_2.png', 'GOAL_3.png', 'GOAL_4.png', 'GOAL_5.png']
         image_files = ['1_goal.png', '2_goal.png', '3_goal.png', '4_goal.png', '5_goal.png', '6_goal.png', '7_goal.png', '8_goal.png', '9_goal.png', '10_goal.png']
         pikapika_files = ['pikapika.png']
+        jqmark_files = ['JQmark.png']
 
         self.images = [ read_image(image_directory, image_filename) for image_filename in image_files ]
         self.pika_images = [ read_image(image_directory, image_filename) for image_filename in pikapika_files ]
+        self.jq_images = [ read_image(image_directory, image_filename) for image_filename in jqmark_files ]
 
     def setup(self):
         print("ProcessField.setup")
@@ -166,15 +168,17 @@ class ProcessField():
                     color = BLUE
             
             #########################################################
-            # MODE 7: ホーム画面 ぴかぴかクリーナーズ
+            # MODE 7: ホーム画面
             #########################################################
             elif self.share_resouce._field_mode.value == MODE_7:
 
                 chg_img_interval = 15 # 約0.5s
                 goal_idx = (mode_cnt // 15) % len(self.pika_images)
+                # goal_idx = (mode_cnt // 15) % len(self.jq_images)
                 for i in range(LED_NUM):
                     for j in range(DATA_LEN):
                         self.display_map[i][j] = self.pika_images[goal_idx][i][j]
+                        #self.display_map[i][j] = self.jq_images[goal_idx][i][j]
 
                 self.serial_send()
                 mode_cnt += 1
