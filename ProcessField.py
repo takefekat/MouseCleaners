@@ -521,7 +521,14 @@ class ProcessField():
 
     def serial_send(self):
         try:
-            self.ser.write(bytes(list(itertools.chain.from_iterable(self.display_map))))
+            temp = [[0 for j in range(DATA_LEN)] for i in range(LED_NUM)]
+            temp.append([0x01])      #最終のエンドフラグは書き込み済み
+
+            for i in range(32):
+                for j in range(32):
+                    for rgb in range(3):
+                        temp[(31 - j) * 32 + i][rgb] = self.display_map[i * 32 + j][rgb]
+            self.ser.write(bytes(list(itertools.chain.from_iterable(temp))))
         except:
             pass
     
