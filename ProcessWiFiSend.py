@@ -88,7 +88,6 @@ class ProcessWiFiSend():
             print(f"[mouce {MOUCE_NAME[self.mouse_idx]} send]: Connection closed.")
 
             self.clientsocket.close()
-            self.share_resouce._connected_mice[self.mouse_idx] = 0  # マウスなし
             time.sleep(1)
 
     def make_send_msg(self, data:bytes):

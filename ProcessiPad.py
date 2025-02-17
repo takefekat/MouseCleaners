@@ -63,6 +63,11 @@ class ProcessiPad():
                         # "paths"が含まれている場合、パスを更新
                         if "paths" in msg_json:
                             print("[iPad   ]: get paths from iPad")
+
+                            # マウス接続状態を未接続に初期化
+                            for i in range(NUM_MOUSE):
+                                self.share_resouce._connected_mice[i] = 0
+
                             for path in msg_json["paths"]:
                                 if path['mouse_id'] == 0:
                                     for i in range(len(path['path'])):
@@ -113,22 +118,14 @@ class ProcessiPad():
                             elif msg_json["signal"] == "mode:home":           
                                 self.share_resouce._field_mode.value = 7 # MODE_7: ぴかぴかクリーナーズ
                                 for i in range(NUM_MOUSE):
-                                    self.share_resouce._connected_mice[i] = 0
-                                for t in range(3):
-                                    for i in range(NUM_MOUSE):
-                                        self.share_resouce._connected_mice[i] = 0
-                                        self.share_resouce._dummy_event[i] = 1
-                                    time.sleep(0.5)
+                                    self.share_resouce._dummy_event[i] = 1
 
 
                             elif msg_json["signal"] == "mode:objRcg":           
                                 self.share_resouce._obj_update.value = 1 # 障害物更新フラグをON
                                 self.share_resouce._field_mode.value = 8 # MODE_8: 障害物表示
-                                for t in range(3):
-                                    for i in range(NUM_MOUSE):
-                                        self.share_resouce._connected_mice[i] = 0
-                                        self.share_resouce._dummy_event[i] = 1
-                                    time.sleep(0.5)
+                                for i in range(NUM_MOUSE):
+                                    self.share_resouce._dummy_event[i] = 1
 
                             elif msg_json["signal"] == "mode:pathFind":
                                 # 経路情報をリセット
@@ -137,9 +134,8 @@ class ProcessiPad():
                                     self.share_resouce._path1[i] = 255
                                     self.share_resouce._path2[i] = 255
                                     self.share_resouce._path3[i] = 255
-
                                 for i in range(NUM_MOUSE):
-                                    self.share_resouce._connected_mice[i] = 0
+                                    self.share_resouce._dummy_event[i] = 1
 
                             elif msg_json["signal"] == "get_path": # 紛らわしいが障害物を受信
                                 self.share_resouce._obj_update.value = 0 # 障害物更新フラグをOFF

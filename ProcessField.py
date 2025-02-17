@@ -377,15 +377,18 @@ class ProcessField():
 
                 # 全マウスがゴールに到達した場合、MODE 6 パフォーマンス表示に移行
                 is_all_goal = True
-                print("goal mouce:")
                 for i in range(NUM_MOUSE):
-                    print(i, ': ', self.share_resouce._connected_mice[i], ' ', self.share_resouce._field_mode5_is_goal[i], " --> ", end="")
-                    print((self.share_resouce._connected_mice[i] == 0 or self.share_resouce._field_mode5_is_goal[i] == 1))
+                    # 接続済みマウスの中で、どれか一つでもゴールに達していなかったらFalse
                     if self.share_resouce._connected_mice[i] == 1 and self.share_resouce._field_mode5_is_goal[i] == 0:
                         is_all_goal = False
                         break
-                print("")
                 if is_all_goal:
+                    # ゴール判定状態を標準出力に表示
+                    for i in range(NUM_MOUSE):
+                        color = ['赤','青','緑','黄']
+                        is_connect = '接続済み' if self.share_resouce._connected_mice[i] else '未接続'
+                        is_goal = 'ゴール' if self.share_resouce._field_mode5_is_goal[i] else '走行中'
+                        print(color[i], ': ', is_connect, is_goal)
                     self.share_resouce._field_mode.value = MODE_6
                     self.mode6_timer = 0
 

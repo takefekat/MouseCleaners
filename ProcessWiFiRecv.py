@@ -81,7 +81,6 @@ class ProcessWiFiRecv():
             print(f"[mouce {MOUCE_NAME[self.mouse_idx]}]: ##### ERROR ##### MOUSE ")
             for i in range(NUM_MOUSE):
                 self.share_resouce._stop_event[i] = 1
-        self.share_resouce._connected_mice[self.mouse_idx] = 1
 
     def start(self):
         self._process_wifi.start()
