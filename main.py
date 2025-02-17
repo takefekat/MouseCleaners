@@ -33,13 +33,13 @@ def main():
     process_field.start()
     process_ipad.start()
     process_obj_recog.start()
-    process_wifi_send[0].start()
+    process_wifi_send[0].start() # 赤
     process_wifi_recv[0].start()
-    process_wifi_send[1].start()
+    process_wifi_send[1].start() # 青
     process_wifi_recv[1].start()
-    process_wifi_send[2].start()
+    process_wifi_send[2].start() # 緑
     process_wifi_recv[2].start()
-    process_wifi_send[3].start()
+    process_wifi_send[3].start() # 黄
     process_wifi_recv[3].start()
     
     # プロセスの終了
