@@ -5,6 +5,7 @@ import multiprocessing as mp
 import socket
 
 from ShareResouce import ShareResouce
+MOUCE_NAME = ["赤", "青", "緑", "黄"]
 
 
 class ProcessWiFiSend():
@@ -13,11 +14,11 @@ class ProcessWiFiSend():
         self.mouse_idx = mouse_idx
         self.port = 1235 + mouse_idx 
         self._process_wifi = mp.Process(target=self.setup, name="ProcessWiFiSend")
-        print(f"[mouce {self.mouse_idx} send]: ProcessWiFiSend.__init__")
+        print(f"[mouce {MOUCE_NAME[self.mouse_idx]} send]: ProcessWiFiSend.__init__")
 
 
     def setup(self):
-        print(f"[mouce {self.mouse_idx} send]: ProcessWiFiSend.setup", self.port)
+        print(f"[mouce {MOUCE_NAME[self.mouse_idx]} send]: ProcessWiFiSend.setup", self.port)
         self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.s.bind(('192.168.251.3', self.port))  # IPとポート番号を指定します
@@ -28,7 +29,7 @@ class ProcessWiFiSend():
             time.sleep(1)
 
             self.clientsocket, address = self.s.accept()
-            print(f"[mouce {self.mouse_idx} send]: Connection from {address} has been established.")
+            print(f"[mouce {MOUCE_NAME[self.mouse_idx]} send]: Connection from {address} has been established.")
             
             # マウス新規接続時初期化: share_resouceの初期化をしたほうがいい。
             if self.clientsocket:
@@ -68,24 +69,23 @@ class ProcessWiFiSend():
                         send_data = b'DUMMY'
                         self.clientsocket.send(b'dummy')
                     else:
-                        continue
+                        continue #送信しない
                     
                     send_msg = self.make_send_msg(send_data)
                     try:
                         self.clientsocket.send(send_msg)
                     except socket.timeout:
-                        print(f"[mouce {self.mouse_idx} send]: time out disconnected.")
-                        #self.share_resouce._connected_mice[self.mouse_idx] = 0
+                        print(f"[mouce {MOUCE_NAME[self.mouse_idx]} send]: timeout error. cannot send msg:", send_data)
                         break
-                    print(f"[mouce {self.mouse_idx} send]: send :", send_msg)
+                    print(f"[mouce {MOUCE_NAME[self.mouse_idx]} send]: send :", send_data)
 
 
                 except BrokenPipeError:
-                    print(f"[mouce {self.mouse_idx} send]: Connection closed by client.")
+                    print(f"[mouce {MOUCE_NAME[self.mouse_idx]} send]: Connection closed by client: BrokenPipeError")
                     self.clientsocket.close()
                     break
                 
-            print(f"[mouce {self.mouse_idx} send]: Connection closed.")
+            print(f"[mouce {MOUCE_NAME[self.mouse_idx]} send]: Connection closed.")
 
             self.clientsocket.close()
             self.share_resouce._connected_mice[self.mouse_idx] = 0  # マウスなし
@@ -101,7 +101,7 @@ class ProcessWiFiSend():
         return b'>' + data_len.to_bytes(2, "big") + data + check_sum.to_bytes(1, "big")
 
     def send_path(self):
-        print(f"[mouce {self.mouse_idx} send]: send_path", self.mouse_idx)
+        print(f"[mouce {MOUCE_NAME[self.mouse_idx]} send]: send_path", self.mouse_idx)
         path = bytes()
         for i in range(1024):
             # TODO: マウスの識別がダサいので修正する
@@ -128,7 +128,7 @@ class ProcessWiFiSend():
         self._process_wifi.start()
 
     def close(self):
-        print(f"[mouce {self.mouse_idx} send]: ProcessWiFiSend.close")
+        print(f"[mouce {MOUCE_NAME[self.mouse_idx]} send]: ProcessWiFiSend.close")
         try:
             self.clientsocket.close()
             self.s.close()

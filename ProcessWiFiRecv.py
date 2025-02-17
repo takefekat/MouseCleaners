@@ -15,12 +15,12 @@ class ProcessWiFiRecv():
         self.mouse_idx = mouse_idx
         self.port = 1235 + mouse_idx + 10
         self._process_wifi = mp.Process(target=self.setup, name="ProcessWiFiRecv")
-        print(f"[mouce {self.mouse_idx} recv]: ProcessWiFiRecv.__init__")
+        print(f"[mouce {MOUCE_NAME[self.mouse_idx]} recv]: ProcessWiFiRecv.__init__")
 
 
     def setup(self):
-        print(f"[mouce {self.mouse_idx} recv]: ProcessWiFiRecv.setup", self.port)
-        self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        print(f"[mouce {MOUCE_NAME[self.mouse_idx]} recv]: ProcessWiFiRecv.setup", self.port)
+        self.s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.s.bind(('192.168.251.3', self.port))  # IPとポート番号を指定します
         self.s.listen(5)
@@ -141,7 +141,7 @@ class ProcessWiFiRecv():
             #if  self.share_resouce._mouse3_pos[1] != y:
                 self.share_resouce._mouse3_pos[1] = y
         else:
-            print(f"[mouce {self.mouse_idx}]: mouse_id error")
+            print(f"[mouce {MOUCE_NAME[self.mouse_idx]}]: mouse_id error")
             pass
 
         # バッテリー電圧が低い場合は警告
@@ -159,7 +159,7 @@ class ProcessWiFiRecv():
         self._process_wifi.start()
 
     def close(self):
-        print(f"[mouce {self.mouse_idx} recv]: ProcessWiFiRecv.close")
+        print(f"[mouce {MOUCE_NAME[self.mouse_idx]} recv]: ProcessWiFiRecv.close")
         try:
             self.clientsocket.close()
             self.s.close()
