@@ -26,7 +26,7 @@ class ProcessWiFiSend():
 
         # 定常処理
         while True:
-            time.sleep(1)
+            time.sleep(0.5)
 
             self.clientsocket, address = self.s.accept()
             print(f"[mouce {MOUCE_NAME[self.mouse_idx]} send]: Connection from {address} has been established.")
@@ -41,8 +41,7 @@ class ProcessWiFiSend():
 
             # self.clientsocket が有効の場合、以下の処理を実行
             while self.clientsocket:
-                # self.share_resouce._connected_mice[self.mouse_idx] = 1  # ソケット接続中 --> マウスあり
-                time.sleep(0.5)
+                time.sleep(0.1)
                 try:
                     # mouse_idx の経路が設定されていれば送信
                     if self.share_resouce._send_path_event[self.mouse_idx] == 1:
