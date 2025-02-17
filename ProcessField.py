@@ -391,6 +391,7 @@ class ProcessField():
                         print(color[i], ': ', is_connect, is_goal)
                     self.share_resouce._field_mode.value = MODE_6
                     self.mode6_timer = 0
+                    time.sleep(1)
 
 
             #########################################################
