@@ -82,9 +82,11 @@ class ProcessField():
         #image_files = ['GOAL_1.png', 'GOAL_2.png', 'GOAL_3.png', 'GOAL_4.png', 'GOAL_5.png']
         image_files = ['1_goal.png', '2_goal.png', '3_goal.png', '4_goal.png', '5_goal.png', '6_goal.png', '7_goal.png', '8_goal.png', '9_goal.png', '10_goal.png']
         pikapika_files = ['pikapika.png']
+        jqmark_files = ['JQmark.png']
 
         self.images = [ read_image(image_directory, image_filename) for image_filename in image_files ]
         self.pika_images = [ read_image(image_directory, image_filename) for image_filename in pikapika_files ]
+        self.jq_images = [ read_image(image_directory, image_filename) for image_filename in jqmark_files ]
 
     def setup(self):
         print("ProcessField.setup")
@@ -166,15 +168,17 @@ class ProcessField():
                     color = BLUE
             
             #########################################################
-            # MODE 7: ホーム画面 ぴかぴかクリーナーズ
+            # MODE 7: ホーム画面
             #########################################################
             elif self.share_resouce._field_mode.value == MODE_7:
 
                 chg_img_interval = 15 # 約0.5s
                 goal_idx = (mode_cnt // 15) % len(self.pika_images)
+                # goal_idx = (mode_cnt // 15) % len(self.jq_images)
                 for i in range(LED_NUM):
                     for j in range(DATA_LEN):
                         self.display_map[i][j] = self.pika_images[goal_idx][i][j]
+                        #self.display_map[i][j] = self.jq_images[goal_idx][i][j]
 
                 self.serial_send()
                 mode_cnt += 1
@@ -373,17 +377,21 @@ class ProcessField():
 
                 # 全マウスがゴールに到達した場合、MODE 6 パフォーマンス表示に移行
                 is_all_goal = True
-                print("goal mouce:")
                 for i in range(NUM_MOUSE):
-                    print(i, ': ', self.share_resouce._connected_mice[i], ' ', self.share_resouce._field_mode5_is_goal[i], " --> ", end="")
-                    print((self.share_resouce._connected_mice[i] == 0 or self.share_resouce._field_mode5_is_goal[i] == 1))
+                    # 接続済みマウスの中で、どれか一つでもゴールに達していなかったらFalse
                     if self.share_resouce._connected_mice[i] == 1 and self.share_resouce._field_mode5_is_goal[i] == 0:
                         is_all_goal = False
                         break
-                print("")
                 if is_all_goal:
+                    # ゴール判定状態を標準出力に表示
+                    for i in range(NUM_MOUSE):
+                        color = ['赤','青','緑','黄']
+                        is_connect = '接続済み' if self.share_resouce._connected_mice[i] else '未接続'
+                        is_goal = 'ゴール' if self.share_resouce._field_mode5_is_goal[i] else '走行中'
+                        print(color[i], ': ', is_connect, is_goal)
                     self.share_resouce._field_mode.value = MODE_6
                     self.mode6_timer = 0
+                    time.sleep(1)
 
 
             #########################################################
@@ -513,7 +521,14 @@ class ProcessField():
 
     def serial_send(self):
         try:
-            self.ser.write(bytes(list(itertools.chain.from_iterable(self.display_map))))
+            temp = [[0 for j in range(DATA_LEN)] for i in range(LED_NUM)]
+            temp.append([0x01])      #最終のエンドフラグは書き込み済み
+
+            for i in range(32):
+                for j in range(32):
+                    for rgb in range(3):
+                        temp[(31 - j) * 32 + i][rgb] = self.display_map[i * 32 + j][rgb]
+            self.ser.write(bytes(list(itertools.chain.from_iterable(temp))))
         except:
             pass
     
